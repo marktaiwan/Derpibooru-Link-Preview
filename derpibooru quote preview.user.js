@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Preview
 // @description  Hover preview for links to other comments
-// @version      1.0.13
+// @version      1.0.14
 // @author       Mark Lin
 // @namespace    https://greasyfork.org/users/17419
 // @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/\d{1,}(/|\.html)?/
