@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Preview
 // @description  Hover preview for links to other comments
-// @version      1.0.17
+// @version      1.0.18
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Quote-Preview
