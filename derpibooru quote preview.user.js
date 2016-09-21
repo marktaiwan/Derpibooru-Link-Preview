@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Derpibooru Comment Preview
 // @description  Hover preview for links to other comments
-// @version      1.0.18
+// @version      1.0.19
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Quote-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Quote-Preview/issues
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/\d{1,}(\??.{1,}|/|\.html)?/
+// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/(images/)?\d{1,}(\??.{1,}|/|\.html)?/
 // @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/user_comments/\d{1,}(\??.{1,}|/|\.html)?/
 // @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/my_comments(\??.{1,}|/|\.html)?$/
 // @grant        none
@@ -84,8 +84,6 @@
         // filtering
         if (!e.target.matches('.communication__body__text a[href*="#comment_"], .communication__body__text a[href*="#comment_"]>*')) return;
 
-        hover = true;
-
         // Example: e.target.hash == "#comment_5430424"
         var sourceLink = e.target.parentNode.matches('a[href*="#comment_"]') ? e.target.parentNode : e.target;
         var targetID = sourceLink.hash.slice(9);
@@ -97,10 +95,11 @@
             sourceLink.nextElementSibling.nextElementSibling &&
             sourceLink.nextElementSibling.nextElementSibling.matches('blockquote')) return;
 
+        hover = true;
 
         if (targetComment !== null) {
-
             // Post exist on current page
+
             if (!elementInViewport(targetComment)) displayHover(targetComment, sourceLink);
 
             // Highlight linked post
