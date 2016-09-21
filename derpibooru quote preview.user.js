@@ -6,9 +6,9 @@
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Quote-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Quote-Preview/issues
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/\d{1,}(\?.{1,}|/|\.html)?/
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/user_comments/\d{1,}(\?.{1,}|/|\.html)?/
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/my_comments(\?.{1,}/|\.html)?$/
+// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/\d{1,}(\??.{1,}|/|\.html)?/
+// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/user_comments/\d{1,}(\??.{1,}|/|\.html)?/
+// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/my_comments(\??.{1,}|/|\.html)?$/
 // @grant        none
 // ==/UserScript==
 
