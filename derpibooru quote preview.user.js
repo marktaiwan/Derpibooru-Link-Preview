@@ -19,6 +19,7 @@
 
         if (!hover) return;
 
+        // hack for preventing mulltiple previews from appearing due to fetch()
         var preview = document.querySelectorAll('#hover_preview');
         if (preview !== null) {
             for (i = 0; i < preview.length; i++) {
@@ -26,6 +27,7 @@
             }
         }
 
+        comment = comment.cloneNode(true);
         comment.id = 'hover_preview';
         comment.style.position = 'absolute';
         comment.style.maxWidth = '980px';
@@ -33,25 +35,22 @@
 
         // Make spoiler visible
         var i;
-        var list = comment.querySelectorAll('span.spoiler, span.imgspoiler');
+        var list = comment.querySelectorAll('span.spoiler, span.imgspoiler, span.imgspoiler img');
         if (list !== null) {
             for (i = 0; i < list.length; i++) {
-                list[i].style.color = '#333';
-                list[i].style.backgroundColor = '#f7d4d4';
-            }
-        }
-        // img spoiler
-        list = comment.querySelectorAll('span.imgspoiler img');
-        if (list !== null) {
-            for (i = 0; i < list.length; i++) {
-                list[i].style.visibility = 'visible';
+
+                if (list[i].matches('span')) {
+                    list[i].style.color = '#333';
+                    list[i].style.backgroundColor = '#f7d4d4';
+                } else {
+                    list[i].style.visibility = 'visible';
+                }
+
             }
         }
 
         var container = document.getElementById('image_comments') || document.getElementById('content');
-        if (container) {
-            container.appendChild(comment);
-        }
+        if (container) container.appendChild(comment);
 
         // calculate link position
         var linkRect = link.getBoundingClientRect();
@@ -100,11 +99,9 @@
 
 
         if (targetComment !== null) {
-            // Post exist on current page
 
-            if (!elementInViewport(targetComment)) {
-                displayHover(targetComment.cloneNode(true), sourceLink);
-            }
+            // Post exist on current page
+            if (!elementInViewport(targetComment)) displayHover(targetComment, sourceLink);
 
             // Highlight linked post
             targetComment.firstChild.style.backgroundColor = 'rgba(230,230,30,0.3)';
@@ -145,15 +142,14 @@
         var preview = document.getElementById('hover_preview');
 
         // ignore quotes
-        // this is terrible
+        // this is still terrible
         if (sourceLink.nextElementSibling &&
             sourceLink.nextElementSibling.nextElementSibling &&
             sourceLink.nextElementSibling.nextElementSibling.matches('blockquote')) return;
 
         //remove highlight
-        if (targetComment !== null) {
-            targetComment.firstChild.style.backgroundColor = '';
-        }
+        if (targetComment !== null) targetComment.firstChild.style.backgroundColor = '';
+
         if (preview !== null) preview.parentNode.removeChild(preview);
 
     }
