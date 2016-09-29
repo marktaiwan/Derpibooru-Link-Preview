@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Derpibooru Comment Preview
 // @description  Hover preview for links to other comments
-// @version      1.0.20
+// @version      1.0.21
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/(images/)?\d{1,}(\?|\?.{1,}|/|\.html)?$/
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/user_comments/\d{1,}(\?|\?.{1,}|/|\.html)?$/
-// @include      /^https?://(www\.)?(derpiboo\.ru|derpibooru\.org|trixiebooru\.org)/lists/my_comments(\?|\?.{1,}|/|\.html)?$/
+// @include      /^https?://(www\.)?(derpibooru\.org|trixiebooru\.org)/(images/)?\d{1,}(\?|\?.{1,}|/|\.html)?$/
+// @include      /^https?://(www\.)?(derpibooru\.org|trixiebooru\.org)/lists/user_comments/\d{1,}(\?|\?.{1,}|/|\.html)?$/
+// @include      /^https?://(www\.)?(derpibooru\.org|trixiebooru\.org)/lists/my_comments(\?|\?.{1,}|/|\.html)?$/
 // @grant        none
 // ==/UserScript==
 
