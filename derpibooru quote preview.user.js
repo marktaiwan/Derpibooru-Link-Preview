@@ -41,6 +41,17 @@
             }
         }
 
+        // highlight reply link
+        var ele = sourceLink;
+        while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
+        var sourceCommentID = ele.id.slice(8);
+
+        list = comment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
+        if (list !== null) {
+            for (i = 0; i < list.length; i++) list[i].style.textDecoration = 'underline dashed';
+        }
+
+
         var container = document.getElementById('image_comments') || document.getElementById('content');
         if (container) container.appendChild(comment);
 
@@ -232,7 +243,6 @@
 
     NodeCreationObserver.onCreation('article[id^="comment_"]', function (sourceCommentBody) {
 
-        var isImagePage = (document.getElementById('image_comments') !== null);
         var links = sourceCommentBody.querySelectorAll('.communication__body__text a[href*="#comment_"]');
         var sourceCommentID = sourceCommentBody.id.slice(8);
 
