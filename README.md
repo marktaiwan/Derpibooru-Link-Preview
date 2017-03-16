@@ -10,7 +10,5 @@ Requires Greasemonkey on Firefox, or Tampermonkey on Chrome
 [Download from OpenUserJS](//openuserjs.org/scripts/mark.taiwangmail.com/Derpibooru_Comment_Preview)  
 [Download from GreasyFork](//greasyfork.org/en/scripts/23354-derpibooru-comment-preview)
 
-#### Screenshots
-![screenshot](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/master/screenshots/Capture.JPG)  
-![screenshot](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/master/screenshots/Capture2.JPG)
-![screenshot](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/master/screenshots/Capture3.PNG)
+#### In action
+![screenshot](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/master/screenshots/demo.gif)
