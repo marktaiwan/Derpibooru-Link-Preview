@@ -51,6 +51,8 @@
             for (i = 0; i < list.length; i++) list[i].style.textDecoration = 'underline dashed';
         }
 
+        // timey whimy
+        window.booru.timeAgo(comment.querySelectorAll('time'));
 
         var container = document.getElementById('image_comments') || document.getElementById('content');
         if (container) container.appendChild(comment);
@@ -237,6 +239,87 @@
 
     }
 
+    function getQueryVariable(key, HTMLAnchorElement) {
+        var i;
+        var array = HTMLAnchorElement.search.substring(1).split('&');
+
+        for (i = 0; i < array.length; i++) {
+            if (key == array[i].split('=')[0]) {
+                return array[i].split('=')[1];
+            }
+        }
+    }
+
+    function insertButton(displayText) {
+
+        var commentsBlock = document.querySelector('.js-editable-comments');
+
+        var ele = document.createElement('div');
+        ele.className = 'block__header';
+        ele.id = 'comment_loading_button';
+        ele.style.textAlign = 'center';
+
+        ele.appendChild(document.createElement('a'));
+        ele.firstChild.style.padding = '0px';
+        ele.firstChild.style.width = '100%';
+        ele.firstChild.innerText = displayText;
+
+        commentsBlock.insertBefore(ele, commentsBlock.lastElementChild);
+
+        return ele;
+    }
+
+    function loadComments(e, imageId, nextPage, lastPage) {
+
+        e.target.parentElement.remove();
+        var btn = insertButton('Loading...');
+
+        var fetchURL = window.location.origin + '/images/' + imageId + '/comments?id=' + imageId + '&page=' + nextPage;
+
+        fetch(fetchURL, {credentials: "same-origin"})  // an offering of cookies is required if you seek correctly paginated comments
+            .then((response) => response.text())
+            .then((text) => {
+
+                // response text => documentFragment
+                var ele = document.createElement('div');
+                var range = document.createRange();
+
+                ele.innerHTML = text;
+                range.selectNodeContents(ele.firstChild);
+
+                var fragment = range.extractContents();
+                var commentsBlock = document.getElementById('image_comments');
+
+                // get rid of pagination blocks
+                fragment.firstChild.remove();
+                fragment.lastChild.remove();
+
+                // page marker
+                ele.innerHTML = '';
+                ele.className = 'block block__header';
+                ele.style.textAlign = 'center';
+                ele.innerText = 'Page ' + nextPage;
+
+                // relative time
+                window.booru.timeAgo(fragment.querySelectorAll('time'));  // good thing I found this thing
+
+                fragment.insertBefore(ele, fragment.firstElementChild);
+                commentsBlock.insertBefore(fragment, commentsBlock.lastElementChild);
+
+
+                // configure button to load the next batch of comments
+                btn.remove();
+                if (nextPage < lastPage) {
+                    btn = insertButton('Load more comments');
+
+                    btn.addEventListener('click', (e) => {
+                        loadComments(e, imageId, nextPage + 1, lastPage);
+                    });
+                }
+
+            });
+    }
+
     const HOVER_ATTRIBUTE = 'comment-preview-active';
     var fetchCache = {};
     var backlinksCache = {};
@@ -272,7 +355,7 @@
                     linkLeave(backlink, sourceCommentID);
                 });
                 backlink.addEventListener('click', () => {
-                    // force pageload instead of trying to navigate to a nonexistant anchor on the current page
+                    // force pageload instead of trying to navigate to a nonexistent anchor on the current page
                     if (document.getElementById('comment_' + sourceCommentID) === null) window.location.reload();
                 });
 
@@ -301,6 +384,25 @@
                 insertBacklink(backlink, sourceCommentID);
             });
         }
+
+    });
+
+    // Comment loading
+    NodeCreationObserver.onCreation('#image_comments nav>a.js-next', function (btnNextPage) {
+
+        if (document.getElementById('comment_loading_button') !== null) return;
+
+        var btnLastPage = btnNextPage.nextElementSibling;
+
+        var imageId = getQueryVariable('id', btnNextPage);
+        var nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
+        var lastPage = parseInt(getQueryVariable('page', btnLastPage), 10);
+
+        var btn = insertButton('Load more comments');
+
+        btn.addEventListener('click', (e) => {
+            loadComments(e, imageId, nextPage, lastPage);
+        });
 
     });
 
