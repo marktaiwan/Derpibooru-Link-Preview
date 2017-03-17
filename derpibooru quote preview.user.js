@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Preview
 // @description  Hover preview for links to other comments
-// @version      1.2.0
+// @version      1.2.1
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -290,9 +290,9 @@
                 var fragment = range.extractContents();
                 var commentsBlock = document.getElementById('image_comments');
 
-                // get rid of pagination blocks
-                fragment.firstChild.remove();
-                fragment.lastChild.remove();
+                // update pagination blocks
+                commentsBlock.replaceChild(fragment.firstChild, commentsBlock.firstElementChild);
+                commentsBlock.replaceChild(fragment.lastChild, commentsBlock.lastElementChild);
 
                 // page marker
                 ele.innerHTML = '';
