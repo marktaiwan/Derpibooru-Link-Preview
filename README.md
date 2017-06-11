@@ -1,7 +1,7 @@
 #### ~Derpibooru Comment Preview~
 ## Derpibooru Comment Enhancements
 
-### Hover preview for links to other comments on Derpibooru
+### Features
 
  - Toolbar for easier comment formatting
  - Hovers the comment above the link if it's out of view
