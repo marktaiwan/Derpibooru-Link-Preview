@@ -4,6 +4,7 @@
  - Hovers the comment above the link if it's out of view
  - Shows replies that a comment has received (aka backlinks)
  - Works on your personal comments page too
+ - Toolbar for easier comment formatting
 
 #### Installation
 Requires Greasemonkey on Firefox, or Tampermonkey on Chrome  
