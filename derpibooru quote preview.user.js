@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/(images/)?\d{1,}(/comments/\d{1,}/edit|\?.{1,}|\?|/|\.html)?$/
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/lists/user_comments/\d{1,}(\?|\?.{1,}|/|\.html)?$/
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/lists/my_comments(\?|\?.{1,}|/|\.html)?$/
+// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/lists/(my_comments|recent_comments)(\?|\?.{1,}|/|\.html)?$/
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/(forums/)?(art|writing|dis|generals|pony|rp|meta|tagging|uppers)/?(.+)?$/
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/images/new(/|\.html)?$/
 // @grant        none
