@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.4
+// @version      1.3.5
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -25,7 +25,8 @@
         '#comment_body',
         '#post_body',
         '#description',
-        '#image_description'
+        '#image_description',
+        '#topic_posts_attributes_0_body'
     ];
     var formattingSyntax = {
         bold: {
