@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.5
+// @version      1.3.6
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -11,6 +11,7 @@
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/lists/(my_comments|recent_comments)(\?|\?.{1,}|/|\.html)?$/
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/(forums/)?(art|writing|dis|generals|pony|rp|meta|tagging|uppers)/?(.+)?$/
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/images/new(/|\.html)?$/
+// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/messages/.+$/
 // @grant        none
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
 // ==/UserScript==
@@ -26,7 +27,8 @@
         '#post_body',
         '#description',
         '#image_description',
-        '#topic_posts_attributes_0_body'
+        '#topic_posts_attributes_0_body',
+        '#message_body'
     ];
     var formattingSyntax = {
         bold: {
