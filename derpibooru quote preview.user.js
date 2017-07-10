@@ -1,17 +1,16 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.6
+// @version      1.3.7
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/(images/)?\d{1,}(/comments/\d{1,}/edit|\?.{1,}|\?|/|\.html)?$/
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/lists/user_comments/\d{1,}(\?|\?.{1,}|/|\.html)?$/
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/lists/(my_comments|recent_comments)(\?|\?.{1,}|/|\.html)?$/
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/(forums/)?(art|writing|dis|generals|pony|rp|meta|tagging|uppers)/?(.+)?$/
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/images/new(/|\.html)?$/
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org/messages/.+$/
+// @include      https://derpibooru.org/*
+// @include      https://trixiebooru.org/*
+// @include      https://www.derpibooru.org/*
+// @include      https://www.trixiebooru.org/*
+// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
 // @grant        none
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
 // ==/UserScript==
