@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.7
+// @version      1.3.8
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -24,7 +24,7 @@
     var textareaSelectors = [
         '#comment_body',
         '#post_body',
-        '#description',
+        '#description-form #description',
         '#image_description',
         '#topic_posts_attributes_0_body',
         '#message_body'
