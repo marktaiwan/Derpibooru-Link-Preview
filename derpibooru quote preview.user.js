@@ -12,6 +12,7 @@
 // @include      https://www.trixiebooru.org/*
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
 // @grant        none
+// @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
 // ==/UserScript==
 
@@ -19,6 +20,7 @@
     'use strict';
 
     const HOVER_ATTRIBUTE = 'comment-preview-active';
+    const FONT_AWESOME = 'font: normal normal normal 14px/1 FontAwesome; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;';
     var fetchCache = {};
     var backlinksCache = {};
     var textareaSelectors = [
@@ -82,7 +84,8 @@
                 prefix: '@',
                 suffix: '@'
             },
-            edit: wrapSelection
+            edit: wrapSelection,
+            shortcutKey: 'e'
         },
         strike: {
             displayText: 'strike',
@@ -112,29 +115,42 @@
             },
             edit: wrapSelection
         },
+        quote: {
+            displayText: '',
+            altText: 'insert blockquote',
+            styleCSS: FONT_AWESOME,
+            glyph: '\\f10e',
+            options: {
+                prefix: '[bq]',
+                suffix: '[/bq]'
+            },
+            edit: wrapSelection
+        },
         link: {
             displayText: '',
             altText: 'insert hyperlink',
-            styleCSS: 'font: normal normal normal 14px/1 FontAwesome; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;',
+            styleCSS: FONT_AWESOME,
             glyph: '\\f0c1',
             options: {
                 prefix: '"',
                 suffix: '":',
                 insertLink: true
             },
-            edit: wrapSelection
+            edit: wrapSelection,
+            shortcutKey: 'l'
         },
         image: {
             displayText: '',
             altText: 'insert image',
-            styleCSS: 'font: normal normal normal 14px/1 FontAwesome; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;',
+            styleCSS: FONT_AWESOME,
             glyph: '\\f03e',
             options: {
                 prefix: '!',
                 suffix: '!',
                 insertImage: true
             },
-            edit: wrapSelection
+            edit: wrapSelection,
+            shortcutKey: 'k'
         },
         no_parse: {
             displayText: 'no parse',
@@ -482,7 +498,7 @@
         selectedText = selectedText.substring(0, cursor + 1);
 
         if (options.insertLink) {
-            hyperlink = window.prompt('Enter link:');
+            hyperlink = window.prompt('Link:');
             if (hyperlink === null || hyperlink === '') return;
             // change on-site link to use relative url
             if (hyperlink.startsWith(window.origin)) {
@@ -492,7 +508,7 @@
         }
 
         if (options.insertImage) {
-            hyperlink = window.prompt('Enter link to image:');
+            hyperlink = window.prompt('Link to image:');
             if (hyperlink === null || hyperlink === '') return;
             // change on-site image to embed
             var resultsArray = hyperlink.match(/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
