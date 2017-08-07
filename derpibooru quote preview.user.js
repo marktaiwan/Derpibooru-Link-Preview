@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.9
+// @version      1.3.10
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -704,9 +704,11 @@
 
     });
 
-    NodeCreationObserver.onCreation(textareaSelectors.join(','), function (textarea) {
-        initToolbar(formattingSyntax, textarea);
-    });
-
-    initCSS(formattingSyntax);
+    if (!document.querySelector('.js-toolbar-input')) {
+        // Feature ported to Derpibooru
+        NodeCreationObserver.onCreation(textareaSelectors.join(','), function (textarea) {
+            initToolbar(formattingSyntax, textarea);
+        });
+        initCSS(formattingSyntax);
+    }
 })();
