@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.10
+// @version      1.3.11
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -20,148 +20,8 @@
     'use strict';
 
     const HOVER_ATTRIBUTE = 'comment-preview-active';
-    const FONT_AWESOME = 'font: normal normal normal 14px/1 FontAwesome; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;';
     var fetchCache = {};
     var backlinksCache = {};
-    var textareaSelectors = [
-        '#comment_body',
-        '#post_body',
-        '#description-form #description',
-        '#image_description',
-        '#topic_posts_attributes_0_body',
-        '#message_body'
-    ];
-    var formattingSyntax = {
-        bold: {
-            displayText: 'B',
-            altText: 'bold',
-            styleCSS: 'font-weight: bold;',
-            options: {
-                prefix: '*',
-                suffix: '*'
-            },
-            edit: wrapSelection,
-            shortcutKey: 'b'
-        },
-        italics: {
-            displayText: 'i',
-            altText: 'italics',
-            styleCSS: 'font-style: italic;',
-            options: {
-                prefix: '_',
-                suffix: '_'
-            },
-            edit: wrapSelection,
-            shortcutKey: 'i'
-        },
-        under: {
-            displayText: 'U',
-            altText: 'underline',
-            styleCSS: 'text-decoration: underline;',
-            options: {
-                prefix: '+',
-                suffix: '+'
-            },
-            edit: wrapSelection,
-            shortcutKey: 'u'
-        },
-        spoiler: {
-            displayText: 'spoiler',
-            altText: 'mark as spoiler',
-            styleCSS: '',
-            options: {
-                prefix: '[spoiler]',
-                suffix: '[/spoiler]'
-            },
-            edit: wrapSelection,
-            shortcutKey: 's'
-        },
-        code: {
-            displayText: 'code',
-            altText: 'code formatting',
-            styleCSS: 'font-family: "Courier New", Courier, monospace;',
-            options: {
-                prefix: '@',
-                suffix: '@'
-            },
-            edit: wrapSelection,
-            shortcutKey: 'e'
-        },
-        strike: {
-            displayText: 'strike',
-            altText: 'strikethrough',
-            styleCSS: 'text-decoration: line-through;',
-            options: {
-                prefix: '-',
-                suffix: '-'
-            },
-            edit: wrapSelection
-        },
-        superscript: {
-            displayText: '<sup>sup</sup>',
-            altText: 'superscript',
-            options: {
-                prefix: '^',
-                suffix: '^'
-            },
-            edit: wrapSelection
-        },
-        subscript: {
-            displayText: '<sub>sub</sub>',
-            altText: 'subscript',
-            options: {
-                prefix: '~',
-                suffix: '~'
-            },
-            edit: wrapSelection
-        },
-        quote: {
-            displayText: '',
-            altText: 'insert blockquote',
-            styleCSS: FONT_AWESOME,
-            glyph: '\\f10e',
-            options: {
-                prefix: '[bq]',
-                suffix: '[/bq]'
-            },
-            edit: wrapSelection
-        },
-        link: {
-            displayText: '',
-            altText: 'insert hyperlink',
-            styleCSS: FONT_AWESOME,
-            glyph: '\\f0c1',
-            options: {
-                prefix: '"',
-                suffix: '":',
-                insertLink: true
-            },
-            edit: wrapSelection,
-            shortcutKey: 'l'
-        },
-        image: {
-            displayText: '',
-            altText: 'insert image',
-            styleCSS: FONT_AWESOME,
-            glyph: '\\f03e',
-            options: {
-                prefix: '!',
-                suffix: '!',
-                insertImage: true
-            },
-            edit: wrapSelection,
-            shortcutKey: 'k'
-        },
-        no_parse: {
-            displayText: 'no parse',
-            altText: 'Text you want the parser to ignore',
-            options: {
-                prefix: '[==',
-                suffix: '==]'
-            },
-            edit: wrapSelection
-        }
-    };
 
     function displayHover(comment, sourceLink) {
         const PADDING = 5; // in pixels
@@ -262,7 +122,6 @@
     }
 
     function linkEnter(sourceLink, targetCommentID) {
-
         sourceLink.setAttribute(HOVER_ATTRIBUTE, 1);
 
         var targetComment = document.getElementById('comment_' + targetCommentID);
@@ -281,11 +140,8 @@
 
             // External post, display from cached response if possible
             if (fetchCache[targetCommentID] !== undefined) {
-
                 displayHover(fetchCache[targetCommentID], sourceLink);
-
             } else {
-
                 fetch(window.location.origin + '/comment/' + targetCommentID + '.html')
                     .then((response) => response.text())
                     .then((text) => {
@@ -296,14 +152,12 @@
                             displayHover(d.firstChild, sourceLink);
                         }
                     });
-
             }
 
         }
     }
 
     function linkLeave(sourceLink, targetCommentID) {
-
         sourceLink.setAttribute(HOVER_ATTRIBUTE, 0);
         var targetComment = document.getElementById('comment_' + targetCommentID);
         var preview = document.getElementById('hover_preview');
@@ -313,7 +167,6 @@
             if (targetComment.querySelector('.comment_backlinks') !== null) targetComment.children[1].style.backgroundColor = '';
         }
         if (preview !== null) preview.parentElement.removeChild(preview);
-
     }
 
     // Chrome/Firefox compatibility hack for getting viewport position
@@ -344,7 +197,6 @@
             ele.style.borderTop = window.getComputedStyle(commentBody.firstChild)['border-top'];
 
             commentBody.insertBefore(ele, commentBody.querySelector('.communication__options'));
-
         }
         return ele;
     }
@@ -363,7 +215,6 @@
 
             // insertion sort the links so they are ordered by id
             if (linksContainer.children.length > 0) {
-
                 var iLinkID = parseInt(backlink.hash.slice(9), 10);
                 var iTempID;
                 var i;
@@ -379,7 +230,6 @@
                         return;
                     }
                 }
-
             }
             linksContainer.appendChild(backlink);
             return;
@@ -418,16 +268,14 @@
     }
 
     function loadComments(e, imageId, nextPage, lastPage) {
-
         e.target.parentElement.remove();
-        var btn = insertButton('Loading...');
 
+        var btn = insertButton('Loading...');
         var fetchURL = window.location.origin + '/images/' + imageId + '/comments?id=' + imageId + '&page=' + nextPage;
 
         fetch(fetchURL, {credentials: 'same-origin'})  // cookie needed for correct pagination
             .then((response) => response.text())
             .then((text) => {
-
                 // response text => documentFragment
                 var ele = document.createElement('div');
                 var range = document.createRange();
@@ -454,12 +302,10 @@
                 fragment.insertBefore(ele, fragment.firstElementChild);
                 commentsBlock.insertBefore(fragment, commentsBlock.lastElementChild);
 
-
                 // configure button to load the next batch of comments
                 btn.remove();
                 if (nextPage < lastPage) {
                     btn = insertButton('Load more comments');
-
                     btn.addEventListener('click', (e) => {
                         loadComments(e, imageId, nextPage + 1, lastPage);
                     });
@@ -468,177 +314,19 @@
             });
     }
 
-    function wrapSelection(box, options) {
-        if (box === null) {
-            return;
-        }
-        var hyperlink;
-        var prefix = options.prefix;
-        var suffix = options.suffix;
-
-        // record scroll top to restore it later.
-        var scrollTop = box.scrollTop;
-        var selectionStart = box.selectionStart;
-        var selectionEnd = box.selectionEnd;
-        var text = box.value;
-        var beforeSelection = text.substring(0, selectionStart);
-        var selectedText = text.substring(selectionStart, selectionEnd);
-        var afterSelection = text.substring(selectionEnd);
-
-        var emptySelection = (selectedText === '');
-
-        var trailingSpace = '';
-        var cursor = selectedText.length - 1;
-
-        // deselect trailing space and carriage return
-        while (cursor > 0 && (selectedText[cursor] === ' ' || selectedText[cursor] === '\n')) {
-            trailingSpace = selectedText[cursor] + trailingSpace;
-            cursor--;
-        }
-        selectedText = selectedText.substring(0, cursor + 1);
-
-        if (options.insertLink) {
-            hyperlink = window.prompt('Link:');
-            if (hyperlink === null || hyperlink === '') return;
-            // change on-site link to use relative url
-            if (hyperlink.startsWith(window.origin)) {
-                hyperlink = hyperlink.substring(window.origin.length);
-            }
-            suffix += hyperlink;
-        }
-
-        if (options.insertImage) {
-            hyperlink = window.prompt('Link to image:');
-            if (hyperlink === null || hyperlink === '') return;
-            // change on-site image to embed
-            var resultsArray = hyperlink.match(/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
-            if (resultsArray !== null) {
-                var imageId = resultsArray[1] || resultsArray[2];
-                if (imageId === undefined) {
-                    console.error('Derpibooru Comment Preview: Unable to extract image ID from link: ' + hyperlink);
-                    return;
-                }
-                prefix = '>>';
-                selectedText = imageId;
-                suffix = 'p';
-            } else {
-                selectedText = hyperlink;
-            }
-            emptySelection = false;
-        }
-
-        box.value = beforeSelection + prefix + selectedText + suffix + trailingSpace + afterSelection;
-        if (emptySelection) {
-            box.selectionStart = beforeSelection.length + prefix.length;
-        } else {
-            box.selectionStart = beforeSelection.length + prefix.length + selectedText.length + suffix.length;
-        }
-        box.selectionEnd = box.selectionStart;
-        box.scrollTop = scrollTop;
-    }
-
-    function initCSS(formats) {
-        var ele;
-        var stringBuilder = [];
-        var styleElement = document.createElement('style');
-        styleElement.id = 'dce-css';
-        styleElement.type = 'text/css';
-        stringBuilder.push('/* Generated by Derpibooru Comment Preview */');
-        stringBuilder.push('.dce-toolbar {margin-bottom: 6px;}');
-        stringBuilder.push('.dce-toolbar .button {height: 28px; min-width: 28px; text-align: center; vertical-align: middle; margin: 2px;}');
-        for (ele in formats) {
-            if (formats[ele].styleCSS !== undefined) {
-                stringBuilder.push(`.dce-toolbar .button[formatting="${ele}"] {${formats[ele].styleCSS}}`);
-            }
-            if (formats[ele].glyph !== undefined) {
-                stringBuilder.push(`.dce-toolbar .button[formatting="${ele}"]:before {content: "${formats[ele].glyph}"; font-size: 18px; vertical-align: middle;}`);
-            }
-        }
-        styleElement.innerHTML = stringBuilder.join('\n');
-        document.head.appendChild(styleElement);
-    }
-
-    function initToolbar(formats, textarea) {
-        if (textarea.getAttribute('dce-toolbar') !== null) {
-            return;
-        }
-        var commentBox = textarea;
-        var toolbar = document.createElement('div');
-        var ele;
-
-        // HTML
-        for (ele in formats) {
-            if (formats[ele].displayText !== null) {
-                var btn = document.createElement('div');
-                var name = formats[ele].displayText;
-                var altText = formats[ele].altText;
-                var key = formats[ele].shortcutKey;
-
-                btn.className = 'button';
-                btn.innerHTML = name;
-                if (altText !== undefined) {
-                    if (key !== undefined) {
-                        altText += ` (ctrl+${key})`;
-                    }
-                    btn.title = altText;
-                }
-                btn.setAttribute('formatting', ele);
-
-                toolbar.appendChild(btn);
-            }
-        }
-        toolbar.classList.add('dce-toolbar');
-        commentBox.parentElement.insertBefore(toolbar, commentBox);
-
-        // Event listeners
-        toolbar.addEventListener('click', function (e) {
-            if (e.target.matches('.button') || e.target.parentElement.matches('.button')) {
-                var ele;
-                var btn = (e.target.matches('.button')) ? e.target : e.target.parentElement;
-
-                for (ele in formats) {
-                    if (btn.getAttribute('formatting') == ele) {
-                        formats[ele].edit(commentBox, formats[ele].options);
-                    }
-                }
-                commentBox.focus();
-            }
-        });
-        commentBox.addEventListener('keydown', function (e) {
-            if (e.ctrlKey && !e.shiftKey) {
-                var ele;
-                var ch = e.key.toLowerCase();
-                var box = e.target;
-
-                for (ele in formats) {
-                    if (ch == formats[ele].shortcutKey) {
-                        formats[ele].edit(box, formats[ele].options);
-                        e.preventDefault();
-                    }
-                }
-            }
-        });
-
-        textarea.setAttribute('dce-toolbar', 1);
-    }
-
     NodeCreationObserver.onCreation('article[id^="comment_"]', function (sourceCommentBody) {
-
         var links = sourceCommentBody.querySelectorAll('.communication__body__text a[href*="#comment_"]');
         var sourceCommentID = sourceCommentBody.id.slice(8);
-
         var ele = sourceCommentBody.querySelector('.communication__body__sender-name');
         var sourceAuthor = (ele.firstElementChild !== null && ele.firstElementChild.matches('a')) ? ele.firstElementChild.innerText : ele.innerHTML;
 
         links.forEach((link) => {
-
             var targetCommentID = link.hash.slice(9);    // Example: link.hash == "#comment_5430424"
             var backlink;
 
             // add backlink if the comment is not part of a quote
             // and not fetched
             if (!link.matches('blockquote a') && !sourceCommentBody.matches('.fetched-comment')) {
-
                 backlink = document.createElement('a');
 
                 backlink.style.marginRight = '5px';
@@ -659,7 +347,6 @@
 
                 insertBacklink(backlink, targetCommentID);
             }
-
 
             // ignore quotes
             // this is terrible
@@ -687,28 +374,16 @@
 
     // Comment loading
     NodeCreationObserver.onCreation('#image_comments nav>a.js-next', function (btnNextPage) {
-
         if (document.getElementById('comment_loading_button') !== null) return;
 
         var btnLastPage = btnNextPage.nextElementSibling;
-
         var imageId = getQueryVariable('id', btnNextPage);
         var nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
         var lastPage = parseInt(getQueryVariable('page', btnLastPage), 10);
-
         var btn = insertButton('Load more comments');
 
         btn.addEventListener('click', (e) => {
             loadComments(e, imageId, nextPage, lastPage);
         });
-
     });
-
-    if (!document.querySelector('.js-toolbar-input')) {
-        // Feature ported to Derpibooru
-        NodeCreationObserver.onCreation(textareaSelectors.join(','), function (textarea) {
-            initToolbar(formattingSyntax, textarea);
-        });
-        initCSS(formattingSyntax);
-    }
 })();
