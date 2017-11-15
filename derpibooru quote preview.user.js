@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.3.11
+// @version      1.3.12
 // @author       Marker
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
@@ -22,6 +22,12 @@
     const HOVER_ATTRIBUTE = 'comment-preview-active';
     var fetchCache = {};
     var backlinksCache = {};
+
+    function timeAgo(ele) {
+        // Firefox 57/Greasemonkey 4 compatibility
+        var booru = window.booru || window.wrappedJSObject.booru;
+        booru.timeAgo(ele);
+    }
 
     function displayHover(comment, sourceLink) {
         const PADDING = 5; // in pixels
@@ -60,7 +66,7 @@
         }
 
         // relative time
-        window.booru.timeAgo(comment.querySelectorAll('time'));
+        timeAgo(comment.querySelectorAll('time'));
 
         var container = document.getElementById('image_comments') || document.getElementById('content');
         if (container) container.appendChild(comment);
@@ -194,7 +200,10 @@
             ele = document.createElement('div');
             ele.className = 'block__content comment_backlinks';
             ele.style.fontSize = '12px';
-            ele.style.borderTop = window.getComputedStyle(commentBody.firstChild)['border-top'];
+            // Firefox 57 Workaround: getComputedStyle(commentBody.firstChild)['border-top'] returns an empty string
+            ele.style.borderTopStyle = window.getComputedStyle(commentBody.firstChild)['border-top-style'];
+            ele.style.borderTopWidth = window.getComputedStyle(commentBody.firstChild)['border-top-width'];
+            ele.style.borderTopColor = window.getComputedStyle(commentBody.firstChild)['border-top-color'];
 
             commentBody.insertBefore(ele, commentBody.querySelector('.communication__options'));
         }
@@ -297,7 +306,7 @@
                 ele.innerText = 'Page ' + nextPage;
 
                 // relative time
-                window.booru.timeAgo(fragment.querySelectorAll('time'));
+                timeAgo(fragment.querySelectorAll('time'));
 
                 fragment.insertBefore(ele, fragment.firstElementChild);
                 commentsBlock.insertBefore(fragment, commentsBlock.lastElementChild);
