@@ -3,6 +3,7 @@
 // @description  Improvements to Derpibooru's comment section
 // @version      1.3.12
 // @author       Marker
+// @license      MIT
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
