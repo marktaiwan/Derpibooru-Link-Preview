@@ -10,7 +10,7 @@
 
 #### Installation
 Requires Greasemonkey on Firefox, or Tampermonkey on Chrome  
-[Download from OpenUserJS](//openuserjs.org/scripts/mark.taiwangmail.com/Derpibooru_Comment_Preview)  
+[Download from OpenUserJS](//openuserjs.org/scripts/mark.taiwangmail.com/Derpibooru_Comment_Enhancements)  
 [Download from GreasyFork](//greasyfork.org/en/scripts/23354-derpibooru-comment-enhancements)
 
 #### In action
