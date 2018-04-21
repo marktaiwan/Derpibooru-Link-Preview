@@ -43,17 +43,15 @@
         // Make spoiler visible
         var i;
         var list = comment.querySelectorAll('span.spoiler, span.imgspoiler, span.imgspoiler img');
-        if (list !== null) {
-            for (i = 0; i < list.length; i++) {
+        for (i = 0; i < list.length; i++) {
 
-                if (list[i].matches('span')) {
-                    list[i].style.color = '#333';
-                    list[i].style.backgroundColor = (list[i].matches('span.imgspoiler')) ? '' : '#f7d4d4';
-                } else {
-                    list[i].style.visibility = 'visible';
-                }
-
+            if (list[i].matches('span')) {
+                list[i].style.color = '#333';
+                list[i].style.backgroundColor = (list[i].matches('span.imgspoiler')) ? '' : '#f7d4d4';
+            } else {
+                list[i].style.visibility = 'visible';
             }
+
         }
 
         // highlight reply link
@@ -62,8 +60,9 @@
         var sourceCommentID = ele.id.slice(8);
 
         list = comment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
-        if (list !== null) {
-            for (i = 0; i < list.length; i++) list[i].style.textDecoration = 'underline dashed';
+
+        for (i = 0; i < list.length; i++) {
+            list[i].style.textDecoration = 'underline dashed';
         }
 
         // relative time
