@@ -54,16 +54,7 @@
 
         }
 
-        // highlight reply link
-        var ele = sourceLink;
-        while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
-        var sourceCommentID = ele.id.slice(8);
-
-        list = comment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
-
-        for (i = 0; i < list.length; i++) {
-            list[i].style.textDecoration = 'underline dashed';
-        }
+        highlightReplyLink(comment, sourceLink);
 
         // relative time
         timeAgo(comment.querySelectorAll('time'));
@@ -141,6 +132,7 @@
             // Highlight linked post
             targetComment.children[0].style.backgroundColor = 'rgba(230,230,30,0.3)';
             if (targetComment.querySelector('.comment_backlinks') !== null) targetComment.children[1].style.backgroundColor = 'rgba(230,230,30,0.3)';
+            highlightReplyLink(targetComment, sourceLink);
 
         } else {
 
@@ -169,8 +161,18 @@
         var preview = document.getElementById('hover_preview');
 
         if (targetComment !== null) {
-            targetComment.children[0].style.backgroundColor = '';  //remove comment highlight
+            // remove comment highlight
+            targetComment.children[0].style.backgroundColor = '';
             if (targetComment.querySelector('.comment_backlinks') !== null) targetComment.children[1].style.backgroundColor = '';
+
+            // remove link highlight
+            var ele = sourceLink;
+            while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
+            var sourceCommentID = ele.id.slice(8);
+            var list = targetComment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
+            for (var i = 0; i < list.length; i++) {
+                list[i].style.textDecoration = '';
+            }
         }
         if (preview !== null) preview.parentElement.removeChild(preview);
     }
@@ -244,6 +246,18 @@
             return;
         }
 
+    }
+
+    function highlightReplyLink(comment, sourceLink) {
+        var ele = sourceLink;
+        while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
+        var sourceCommentID = ele.id.slice(8);
+
+        var list = comment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
+
+        for (var i = 0; i < list.length; i++) {
+            list[i].style.textDecoration = 'underline dashed';
+        }
     }
 
     function getQueryVariable(key, HTMLAnchorElement) {
