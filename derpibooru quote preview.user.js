@@ -15,10 +15,49 @@
 // @grant        none
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
+// @require      https://raw.githubusercontent.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/master/derpi-four-u.js
 // ==/UserScript==
 
 (function() {
     'use strict';
+
+    // ==== User Config ====
+    var config = ConfigManager('Derpibooru Comment Enhancements', 'derpi_comment_enhancements');
+    config.registerSetting({
+        title: 'Linkify images',
+        key: 'link_images',
+        description: 'Link embedded images to their sources. Images already containing links will be unaffected.',
+        type: 'checkbox',
+        defaultValue: false
+    });
+    config.registerSetting({
+        title: 'Disable native preview',
+        key: 'disable_native_preview',
+        description: 'This will disable the site\'s native feature that inserts the linked comment above the current one when clicked, and instead navigates to the targted comment.',
+        type: 'checkbox',
+        defaultValue: false
+    });
+    var spoilerSettings = config.addFieldset('Reveal spoiler...');
+    spoilerSettings.registerSetting({
+        title: '...in comment preview',
+        key: 'show_preview_spoiler',
+        description: 'Reveal spoilers in the pop-up preview.',
+        type: 'checkbox',
+        defaultValue: true
+    });
+    spoilerSettings.registerSetting({
+        title: '...in comment highlight',
+        key: 'show_highlight_spoiler',
+        description: 'Reveal spoilers in the highlighted comment.',
+        type: 'checkbox',
+        defaultValue: true
+    });
+
+    const LINK_IMAGES = config.getEntry('link_images');
+    const DISABLE_NATIVE_PREVIEW = config.getEntry('disable_native_preview');
+    const SHOW_PREVIEW_SPOILER = config.getEntry('show_preview_spoiler');
+    const SHOW_HIGHLIGHT_SPOILER = config.getEntry('show_highlight_spoiler');
+    // ==== /User Config ====
 
     const HOVER_ATTRIBUTE = 'comment-preview-active';
     var fetchCache = {};
@@ -39,22 +78,6 @@
         comment.style.maxWidth = '980px';
         comment.style.minWidth = '490px';
         comment.style.boxShadow = '0px 0px 12px 0px rgba(0, 0, 0, 0.4)';
-
-        // Make spoiler visible
-        var i;
-        var list = comment.querySelectorAll('span.spoiler, span.imgspoiler, span.imgspoiler img');
-        for (i = 0; i < list.length; i++) {
-
-            if (list[i].matches('span')) {
-                list[i].style.color = '#333';
-                list[i].style.backgroundColor = (list[i].matches('span.imgspoiler')) ? '' : '#f7d4d4';
-            } else {
-                list[i].style.visibility = 'visible';
-            }
-
-        }
-
-        highlightReplyLink(comment, sourceLink);
 
         // relative time
         timeAgo(comment.querySelectorAll('time'));
@@ -118,23 +141,30 @@
         comment.style.left = commentLeft + 'px';
     }
 
-    function linkEnter(sourceLink, targetCommentID) {
+    function linkEnter(sourceLink, targetCommentID, isForumPost) {
         sourceLink.setAttribute(HOVER_ATTRIBUTE, 1);
-
-        var targetComment = document.getElementById('comment_' + targetCommentID);
+        const selector = isForumPost ? 'post_' : 'comment_';
+        var targetComment = document.getElementById(selector + targetCommentID);
 
         if (targetComment !== null) {
 
+            highlightReplyLink(targetComment, sourceLink);
             if (!elementInViewport(targetComment)) {
+                if (SHOW_PREVIEW_SPOILER) {
+                    revealSpoiler(targetComment);
+                }
                 displayHover(targetComment, sourceLink);
+            }
+            if (SHOW_HIGHLIGHT_SPOILER) {
+                revealSpoiler(targetComment);
             }
 
             // Highlight linked post
             targetComment.children[0].style.backgroundColor = 'rgba(230,230,30,0.3)';
             if (targetComment.querySelector('.comment_backlinks') !== null) targetComment.children[1].style.backgroundColor = 'rgba(230,230,30,0.3)';
-            highlightReplyLink(targetComment, sourceLink);
 
-        } else {
+        }
+        else if (!isForumPost) {
 
             // External post, display from cached response if possible
             if (fetchCache[targetCommentID] !== undefined) {
@@ -155,9 +185,10 @@
         }
     }
 
-    function linkLeave(sourceLink, targetCommentID) {
+    function linkLeave(sourceLink, targetCommentID, isForumPost) {
         sourceLink.setAttribute(HOVER_ATTRIBUTE, 0);
-        var targetComment = document.getElementById('comment_' + targetCommentID);
+        const selector = isForumPost ? 'post_' : 'comment_';
+        var targetComment = document.getElementById(selector + targetCommentID);
         var preview = document.getElementById('hover_preview');
 
         if (targetComment !== null) {
@@ -169,11 +200,27 @@
             var ele = sourceLink;
             while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
             var sourceCommentID = ele.id.slice(8);
-            var list = targetComment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
+            var list = targetComment.querySelectorAll('a[href$="#' + selector + sourceCommentID + '"]');
             for (var i = 0; i < list.length; i++) {
                 list[i].style.textDecoration = '';
             }
+
+            // unreveal spoilers
+            // we use the 'reveal-preview-spoiler' attribute to avoid reverting spoilers manually revealed by users
+            var spoilers = targetComment.querySelectorAll('.spoiler-revealed[reveal-preview-spoiler]');
+            var imgspoilers = targetComment.querySelectorAll('.imgspoiler-revealed[reveal-preview-spoiler]');
+            for (var spoiler of spoilers) {
+                spoiler.classList.remove('spoiler-revealed');
+                spoiler.classList.add('spoiler');
+                spoiler.removeAttribute('reveal-preview-spoiler');
+            }
+            for (var imgspoiler of imgspoilers) {
+                imgspoiler.classList.remove('imgspoiler-revealed');
+                imgspoiler.classList.add('imgspoiler');
+                imgspoiler.removeAttribute('reveal-preview-spoiler');
+            }
         }
+
         if (preview !== null) preview.parentElement.removeChild(preview);
     }
 
@@ -212,15 +259,15 @@
         return ele;
     }
 
-    function insertBacklink(backlink, commentID) {
+    function insertBacklink(backlink, commentID, isForumPost) {
 
         // add to cache
         if (backlinksCache[commentID] === undefined) backlinksCache[commentID] = [];
         if (backlinksCache[commentID].findIndex((ele) => (ele.hash == backlink.hash)) == -1) {
             backlinksCache[commentID].push(backlink);
         }
-
-        var commentBody = document.getElementById('comment_' + commentID);
+        const selector = isForumPost ? 'post_' : 'comment_';
+        var commentBody = document.getElementById(selector + commentID);
         if (commentBody !== null) {
             var linksContainer = createBacklinksContainer(commentBody);
 
@@ -248,11 +295,26 @@
 
     }
 
+    function revealSpoiler(comment) {
+        var spoilers = comment.querySelectorAll('.spoiler');
+        var imgspoilers = comment.querySelectorAll('.imgspoiler');
+
+        for (var spoiler of spoilers) {
+            spoiler.classList.remove('spoiler');
+            spoiler.classList.add('spoiler-revealed');
+            spoiler.setAttribute('reveal-preview-spoiler', '1');
+        }
+        for (var imgspoiler of imgspoilers) {
+            imgspoiler.classList.remove('imgspoiler');
+            imgspoiler.classList.add('imgspoiler-revealed');
+            imgspoiler.setAttribute('reveal-preview-spoiler', '1');
+        }
+    }
+
     function highlightReplyLink(comment, sourceLink) {
         var ele = sourceLink;
         while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
         var sourceCommentID = ele.id.slice(8);
-
         var list = comment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
 
         for (var i = 0; i < list.length; i++) {
@@ -337,14 +399,17 @@
             });
     }
 
-    NodeCreationObserver.onCreation('article[id^="comment_"]', function (sourceCommentBody) {
-        var links = sourceCommentBody.querySelectorAll('.communication__body__text a[href*="#comment_"]');
-        var sourceCommentID = sourceCommentBody.id.slice(8);
+    NodeCreationObserver.onCreation('article[id^="comment_"], article[id^="post_"]', function (sourceCommentBody) {
+        const isForumPost = sourceCommentBody.matches('[id^="post_"]');
+        const selector = isForumPost ? 'post_' : 'comment_';
+
+        var links = sourceCommentBody.querySelectorAll(`.communication__body__text a[href*="#${selector}"]`);
+        var sourceCommentID = sourceCommentBody.id.slice(selector.length);
         var ele = sourceCommentBody.querySelector('.communication__body__sender-name');
         var sourceAuthor = (ele.firstElementChild !== null && ele.firstElementChild.matches('a')) ? ele.firstElementChild.innerText : ele.innerHTML;
 
         links.forEach((link) => {
-            var targetCommentID = link.hash.slice(9);    // Example: link.hash == "#comment_5430424"
+            var targetCommentID = link.hash.slice(selector.length + 1);    // Example: link.hash == "#comment_5430424" or link.hash == "#post_5430424"
             var backlink;
 
             // add backlink if the comment is not part of a quote
@@ -353,22 +418,34 @@
                 backlink = document.createElement('a');
 
                 backlink.style.marginRight = '5px';
-                backlink.href = '#comment_' + sourceCommentID;
+                backlink.href = '#' + selector + sourceCommentID;
                 backlink.textContent = '►';
                 backlink.innerHTML += sourceAuthor;
 
                 backlink.addEventListener('mouseenter', () => {
-                    linkEnter(backlink, sourceCommentID);
+                    linkEnter(backlink, sourceCommentID, isForumPost);
                 });
                 backlink.addEventListener('mouseleave', () => {
-                    linkLeave(backlink, sourceCommentID);
+                    linkLeave(backlink, sourceCommentID, isForumPost);
                 });
                 backlink.addEventListener('click', () => {
                     // force pageload instead of trying to navigate to a nonexistent anchor on the current page
-                    if (document.getElementById('comment_' + sourceCommentID) === null) window.location.reload();
+                    if (document.getElementById(selector + sourceCommentID) === null) window.location.reload();
                 });
 
-                insertBacklink(backlink, targetCommentID);
+                insertBacklink(backlink, targetCommentID, isForumPost);
+            }
+
+            if (DISABLE_NATIVE_PREVIEW) {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    // quoted links doesn't contain query strings, this prevents page reload on links like "derpibooru.org/1234?q=tag"
+                    var a = document.createElement('a');
+                    a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
+                    a.click();
+                });
             }
 
             // ignore quotes
@@ -378,10 +455,10 @@
                     link.nextElementSibling.nextElementSibling.matches('blockquote')) return;
 
             link.addEventListener('mouseenter', () => {
-                linkEnter(link, targetCommentID);
+                linkEnter(link, targetCommentID, isForumPost);
             });
             link.addEventListener('mouseleave', () => {
-                linkLeave(link, targetCommentID);
+                linkLeave(link, targetCommentID, isForumPost);
             });
 
         });
@@ -395,7 +472,7 @@
 
     });
 
-    // Comment loading
+    // Load and append more comments
     NodeCreationObserver.onCreation('#image_comments nav>a.js-next', function (btnNextPage) {
         if (document.getElementById('comment_loading_button') !== null) return;
 
@@ -409,4 +486,24 @@
             loadComments(e, imageId, nextPage, lastPage);
         });
     });
+
+    // Add clickable links to hotlinked images
+    if (LINK_IMAGES) {
+        NodeCreationObserver.onCreation('.communication__body__text .imgspoiler>img, .image-description .imgspoiler>img', img => {
+            if (img.closest('a') !==  null) return; // Image is already part of link so we do nothing.
+
+            const imgParent = img.parentElement;
+            const anchor = document.createElement('a');
+            const resultsArray = img.src.match(/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
+
+            if (resultsArray !== null) {
+                const imageID = resultsArray[1] || resultsArray[2]; // Image is on Derpibooru
+                anchor.href = `/${imageID}`;
+            } else {
+                anchor.href = decodeURIComponent(img.src.substr(img.src.indexOf('?url=') + 5));
+            }
+            anchor.appendChild(img);
+            imgParent.appendChild(anchor);
+        });
+    }
 })();
