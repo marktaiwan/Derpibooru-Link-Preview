@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.0
+// @version      1.4.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -443,7 +443,11 @@
 
                     // quoted links doesn't contain query strings, this prevents page reload on links like "derpibooru.org/1234?q=tag"
                     var a = document.createElement('a');
-                    a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
+                    if (isForumPost && (document.getElementById('post_' + targetCommentID) === null)) {
+                        a.href = e.currentTarget.href;
+                    } else {
+                        a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
+                    }
                     a.click();
                 });
             }
