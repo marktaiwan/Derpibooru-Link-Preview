@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.1
+// @version      1.4.2
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -148,7 +148,7 @@
 
         if (targetComment !== null) {
 
-            highlightReplyLink(targetComment, sourceLink);
+            highlightReplyLink(targetComment, sourceLink, isForumPost);
             if (!elementInViewport(targetComment)) {
                 if (SHOW_PREVIEW_SPOILER) {
                     revealSpoiler(targetComment);
@@ -199,7 +199,7 @@
             // remove link highlight
             var ele = sourceLink;
             while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
-            var sourceCommentID = ele.id.slice(8);
+            var sourceCommentID = ele.id.slice(selector.length);
             var list = targetComment.querySelectorAll('a[href$="#' + selector + sourceCommentID + '"]');
             for (var i = 0; i < list.length; i++) {
                 list[i].style.textDecoration = '';
@@ -311,11 +311,12 @@
         }
     }
 
-    function highlightReplyLink(comment, sourceLink) {
+    function highlightReplyLink(comment, sourceLink, isForumPost) {
+        const selector = isForumPost ? 'post_' : 'comment_';
         var ele = sourceLink;
         while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
-        var sourceCommentID = ele.id.slice(8);
-        var list = comment.querySelectorAll('a[href$="#comment_' + sourceCommentID + '"]');
+        var sourceCommentID = ele.id.slice(selector.length);
+        var list = comment.querySelectorAll('a[href$="#' + selector + sourceCommentID + '"]');
 
         for (var i = 0; i < list.length; i++) {
             list[i].style.textDecoration = 'underline dashed';
