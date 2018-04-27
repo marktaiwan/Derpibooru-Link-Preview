@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.2
+// @version      1.4.3
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -79,6 +79,10 @@
         comment.style.minWidth = '490px';
         comment.style.boxShadow = '0px 0px 12px 0px rgba(0, 0, 0, 0.4)';
 
+        if (SHOW_PREVIEW_SPOILER) {
+            revealSpoiler(comment);
+        }
+
         // relative time
         timeAgo(comment.querySelectorAll('time'));
 
@@ -149,10 +153,8 @@
         if (targetComment !== null) {
 
             highlightReplyLink(targetComment, sourceLink, isForumPost);
+
             if (!elementInViewport(targetComment)) {
-                if (SHOW_PREVIEW_SPOILER) {
-                    revealSpoiler(targetComment);
-                }
                 displayHover(targetComment, sourceLink);
             }
             if (SHOW_HIGHLIGHT_SPOILER) {
