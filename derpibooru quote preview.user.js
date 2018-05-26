@@ -497,7 +497,7 @@
     // Add clickable links to hotlinked images
     if (LINK_IMAGES) {
         NodeCreationObserver.onCreation('.communication__body__text .imgspoiler>img, .image-description .imgspoiler>img', img => {
-            if (img.closest('a') !==  null) return; // Image is already part of link so we do nothing.
+            if (img.closest('a') !== null) return; // Image is already part of link so we do nothing.
 
             const imgParent = img.parentElement;
             const anchor = document.createElement('a');
