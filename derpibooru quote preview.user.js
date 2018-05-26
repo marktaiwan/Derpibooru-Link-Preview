@@ -235,11 +235,19 @@
     }
 
     function elementInViewport(el) {
+
+        // Calculate the ratio of post height and viewport height, and clamp it to a min/max value,
+        // and use it to decide whether to use highlight or preview on a comment that's partially in view.
+        // The script will prefer the use of highlights on long comments,
+        // when using the preview might take up most of the viewport
+
         var rect = el.getBoundingClientRect();
+        var ratio = Math.max(0.25, Math.min(0.95, rect.height / document.documentElement.clientHeight));
+        var margin = Math.round(rect.height * ratio);   // pixels outside of viewport before element is considered out of view
 
         return (
-            rect.top + (rect.height - 50) >= 0 &&
-            rect.bottom - (rect.height - 50) <= document.documentElement.clientHeight
+            rect.top + margin >= 0 &&
+            rect.bottom - margin <= document.documentElement.clientHeight
         );
     }
 
