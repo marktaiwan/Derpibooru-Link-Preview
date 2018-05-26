@@ -455,11 +455,13 @@
                 });
             }
 
-            // ignore quotes
+            // ignore quoted comments
             // this is terrible
-            if (link.nextElementSibling &&
-                    link.nextElementSibling.nextElementSibling &&
-                    link.nextElementSibling.nextElementSibling.matches('blockquote')) return;
+            for (let i = 0, ele = link; i < 3; i++) {
+                ele = ele.nextSibling;
+                if (ele == null) break;
+                if (i == 2 && ele.matches('blockquote[title]')) return;
+            }
 
             link.addEventListener('mouseenter', () => {
                 linkEnter(link, targetCommentID, isForumPost);
