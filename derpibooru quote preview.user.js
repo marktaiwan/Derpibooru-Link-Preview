@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.4
+// @version      1.4.5
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -15,7 +15,7 @@
 // @grant        none
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
-// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?1.0.2
+// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js
 // ==/UserScript==
 
 (function() {
