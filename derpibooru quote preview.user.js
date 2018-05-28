@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.5
+// @version      1.4.6
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -22,6 +22,7 @@
     'use strict';
 
     // ==== User Config ====
+
     var config = ConfigManager('Derpibooru Comment Enhancements', 'derpi_comment_enhancements');
     config.registerSetting({
         title: 'Linkify images',
@@ -57,6 +58,7 @@
     const DISABLE_NATIVE_PREVIEW = config.getEntry('disable_native_preview');
     const SHOW_PREVIEW_SPOILER = config.getEntry('show_preview_spoiler');
     const SHOW_HIGHLIGHT_SPOILER = config.getEntry('show_highlight_spoiler');
+
     // ==== /User Config ====
 
     const HOVER_ATTRIBUTE = 'comment-preview-active';
@@ -259,6 +261,7 @@
             ele = document.createElement('div');
             ele.className = 'block__content comment_backlinks';
             ele.style.fontSize = '12px';
+
             // Firefox 57 Workaround: getComputedStyle(commentBody.firstChild)['border-top'] returns an empty string
             ele.style.borderTopStyle = window.getComputedStyle(commentBody.firstChild)['border-top-style'];
             ele.style.borderTopWidth = window.getComputedStyle(commentBody.firstChild)['border-top-width'];
