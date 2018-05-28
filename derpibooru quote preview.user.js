@@ -454,12 +454,18 @@
 
                     // quoted links doesn't contain query strings, this prevents page reload on links like "derpibooru.org/1234?q=tag"
                     var a = document.createElement('a');
-                    if (isForumPost && (document.getElementById('post_' + targetCommentID) === null)) {
+                    if (document.getElementById(selector + targetCommentID) === null) {
                         a.href = e.currentTarget.href;
                     } else {
                         a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
                     }
                     a.click();
+
+                    // for paginated comments, when comment for the same image is on another page
+                    if (window.location.pathname == e.currentTarget.pathname &&
+                        document.getElementById(selector + targetCommentID) === null) {
+                            window.location.reload();
+                    }
                 });
             }
 
