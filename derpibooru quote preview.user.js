@@ -347,6 +347,12 @@
         }
     }
 
+    function getImageId(url) {
+        const regex = (/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
+        const array = url.match(regex);
+        return (array !== null) ? array[1] || array[2] : null;
+    }
+
     function insertButton(displayText) {
 
         var commentsBlock = document.querySelector('.js-editable-comments');
@@ -366,10 +372,11 @@
         return ele;
     }
 
-    function loadComments(e, imageId, nextPage, lastPage) {
+    function loadComments(e, nextPage, lastPage) {
         e.target.parentElement.remove();
 
         var btn = insertButton('Loading...');
+        var imageId = getImageId(window.location.href);
         var fetchURL = window.location.origin + '/images/' + imageId + '/comments?id=' + imageId + '&page=' + nextPage;
 
         fetch(fetchURL, {credentials: 'same-origin'})  // cookie needed for correct pagination
@@ -406,7 +413,7 @@
                 if (nextPage < lastPage) {
                     btn = insertButton('Load more comments');
                     btn.addEventListener('click', (e) => {
-                        loadComments(e, imageId, nextPage + 1, lastPage);
+                        loadComments(e, nextPage + 1, lastPage);
                     });
                 }
 
@@ -503,13 +510,12 @@
         if (document.getElementById('comment_loading_button') !== null) return;
 
         var btnLastPage = btnNextPage.nextElementSibling;
-        var imageId = getQueryVariable('id', btnNextPage);
         var nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
         var lastPage = parseInt(getQueryVariable('page', btnLastPage), 10);
         var btn = insertButton('Load more comments');
 
         btn.addEventListener('click', (e) => {
-            loadComments(e, imageId, nextPage, lastPage);
+            loadComments(e, nextPage, lastPage);
         });
     });
 
@@ -520,12 +526,12 @@
 
             const imgParent = img.parentElement;
             const anchor = document.createElement('a');
-            const resultsArray = img.src.match(/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
-
-            if (resultsArray !== null) {
-                const imageID = resultsArray[1] || resultsArray[2]; // Image is on Derpibooru
+            const imageId = getImageId(img.src);
+            if (imageId !== null) {
+                // image is on Derpibooru
                 anchor.href = `/${imageID}`;
             } else {
+                // camo.derpicdn.net
                 anchor.href = decodeURIComponent(img.src.substr(img.src.indexOf('?url=') + 5));
             }
             anchor.appendChild(img);
