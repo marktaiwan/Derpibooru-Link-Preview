@@ -348,7 +348,7 @@
     }
 
     function getImageId(url) {
-        const regex = (/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
+        const regex = (/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
         const array = url.match(regex);
         return (array !== null) ? array[1] || array[2] : null;
     }
