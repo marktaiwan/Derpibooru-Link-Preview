@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.7
+// @version      1.4.8
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -529,7 +529,7 @@
             const imageId = getImageId(img.src);
             if (imageId !== null) {
                 // image is on Derpibooru
-                anchor.href = `/${imageID}`;
+                anchor.href = `/${imageId}`;
             } else {
                 // camo.derpicdn.net
                 anchor.href = decodeURIComponent(img.src.substr(img.src.indexOf('?url=') + 5));
