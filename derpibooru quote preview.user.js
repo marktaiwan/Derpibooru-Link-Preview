@@ -469,7 +469,11 @@
                     } else {
                         a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
                     }
+
+                    // Firefox requires the element to be inserted on the page for this to work
+                    document.body.appendChild(a);
                     a.click();
+                    a.remove();
 
                     // for paginated comments, when comment for the same image is on another page
                     if (window.location.pathname == e.currentTarget.pathname &&
