@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.10
+// @version      1.4.11
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -286,12 +286,12 @@
 
             // insertion sort the links so they are ordered by id
             if (linksContainer.children.length > 0) {
-                var iLinkID = parseInt(backlink.hash.slice(9), 10);
+                var iLinkID = getCommentId(backlink);
                 var iTempID;
                 var i;
 
                 for (i = 0; i < linksContainer.children.length; i++) {
-                    iTempID = parseInt(linksContainer.children[i].hash.slice(9), 10);
+                    iTempID = getCommentId(linksContainer.children[i]);
 
                     if (iLinkID == iTempID) {  // prevent links to the same comment from being added multiple times
                         return;
@@ -351,6 +351,12 @@
         const regex = (/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
         const array = url.match(regex);
         return (array !== null) ? array[1] || array[2] : null;
+    }
+
+    function getCommentId(backlink) {
+        // the regex expects the comment id in the format of '#post_1234' or '#comment_5678'
+        const regex = new RegExp('^#(?:post_|comment_)(\\d+)$');
+        return window.parseInt(regex.exec(backlink.hash)[1], 10);
     }
 
     function insertButton(displayText) {
