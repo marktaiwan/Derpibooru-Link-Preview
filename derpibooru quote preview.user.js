@@ -542,7 +542,7 @@
                     // for paginated comments, when comment for the same image is on another page
                     if (window.location.pathname == e.currentTarget.pathname &&
                         document.getElementById(selector + targetCommentID) === null) {
-                            window.location.reload();
+                        window.location.reload();
                     }
                 });
             }
