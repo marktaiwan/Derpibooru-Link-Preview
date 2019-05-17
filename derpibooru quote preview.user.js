@@ -12,13 +12,13 @@
 // @include      https://www.derpibooru.org/*
 // @include      https://www.trixiebooru.org/*
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
-// @grant        none
+// @grant        GM_addStyle
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
 // @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     // ==== User Config ====
@@ -65,10 +65,68 @@
     var fetchCache = {};
     var backlinksCache = {};
 
-    function timeAgo(ele) {
-        // Firefox 57/Greasemonkey 4 compatibility
-        var booru = window.booru || window.wrappedJSObject.booru;
-        booru.timeAgo(ele);
+    /*
+      Unminified code from
+      https://derpibooru.org/meta/booru-on-rails-inquiry/post/3823503#post_3823503
+    */
+    function timeAgo(args) {
+
+        const strings = {
+            seconds: 'less than a minute',
+            minute: 'about a minute',
+            minutes: '%d minutes',
+            hour: 'about an hour',
+            hours: 'about %d hours',
+            day: 'a day',
+            days: '%d days',
+            month: 'about a month',
+            months: '%d months',
+            year: 'about a year',
+            years: '%d years',
+        };
+
+        function distance(time) {
+            return new Date() - time;
+        }
+
+        function substitute(key, amount) {
+            return strings[key].replace('%d', Math.round(amount));
+        }
+
+        function setTimeAgo(el) {
+            const date = new Date(el.getAttribute('datetime'));
+            const distMillis = distance(date);
+
+            /* eslint-disable no-multi-spaces */
+
+            const seconds = Math.abs(distMillis) / 1000;
+            const minutes = seconds / 60;
+            const hours   = minutes / 60;
+            const days    = hours / 24;
+            const months  = days / 30;
+            const years   = days / 365;
+
+            const words =
+              seconds < 45  && substitute('seconds', seconds) ||
+              seconds < 90  && substitute('minute', 1)        ||
+              minutes < 45  && substitute('minutes', minutes) ||
+              minutes < 90  && substitute('hour', 1)          ||
+              hours   < 24  && substitute('hours', hours)     ||
+              hours   < 42  && substitute('day', 1)           ||
+              days    < 30  && substitute('days', days)       ||
+              days    < 45  && substitute('month', 1)         ||
+              days    < 365 && substitute('months', months)   ||
+              years   < 1.5 && substitute('year', 1)          ||
+                               substitute('years', years);
+
+            /* eslint-enable no-multi-spaces */
+
+            if (!el.getAttribute('title')) {
+                el.setAttribute('title', el.textContent);
+            }
+            el.textContent = words + (distMillis < 0 ? ' from now' : ' ago');
+        }
+        [].forEach.call(args, el => setTimeAgo(el));
     }
 
     function displayHover(comment, sourceLink) {
