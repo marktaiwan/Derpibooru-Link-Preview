@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.12
+// @version      1.4.13
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -13,6 +13,7 @@
 // @include      https://www.trixiebooru.org/*
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
 // @grant        GM_addStyle
+// @inject-into  content
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
 // @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js
@@ -414,7 +415,7 @@
     function getCommentId(backlink) {
         // the regex expects the comment id in the format of '#post_1234' or '#comment_5678'
         const regex = new RegExp('^#(?:post_|comment_)(\\d+)$');
-        return window.parseInt(regex.exec(backlink.hash)[1], 10);
+        return parseInt(regex.exec(backlink.hash)[1], 10);
     }
 
     function insertButton(displayText) {
