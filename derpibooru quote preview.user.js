@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.14
+// @version      1.4.15
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -233,7 +233,8 @@
             if (fetchCache[targetCommentID] !== undefined) {
                 displayHover(fetchCache[targetCommentID], sourceLink);
             } else {
-                fetch(window.location.origin + '/comment/' + targetCommentID + '.html')
+                const imageId = getImageId(sourceLink.href);
+                fetch(`${window.location.origin}/images/${imageId}/comments/${targetCommentID}.hrml`, {credentials: 'same-origin'})
                     .then((response) => response.text())
                     .then((text) => {
                         if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
