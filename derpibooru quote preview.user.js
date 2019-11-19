@@ -1,22 +1,19 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.16
+// @version      1.5.0
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
-// @include      https://derpibooru.org/*
-// @include      https://trixiebooru.org/*
-// @include      https://www.derpibooru.org/*
-// @include      https://www.trixiebooru.org/*
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
+// @match        https://*.derpibooru.org/* 
+// @match        https://*.trixiebooru.org/* 
 // @grant        none
 // @inject-into  content
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
-// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?v1.0.5
+// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?v1.2.0
 // ==/UserScript==
 
 (function () {
@@ -155,7 +152,7 @@
         // relative time
         timeAgo($$('time', comment));
 
-        const container = document.getElementById('image_comments') || document.getElementById('content');
+        const container = document.getElementById('comments') || document.getElementById('content');
         if (container) container.appendChild(comment);
 
         // calculate link position
@@ -243,7 +240,10 @@
             } else {
                 const imageId = getImageId(sourceLink.href);
                 fetch(`${window.location.origin}/images/${imageId}/comments/${targetCommentID}`, {credentials: 'same-origin'})
-                    .then((response) => response.text())
+                    .then((response) => {
+                        if (!response.ok) throw new Error('Unable to fetch external comment.');
+                        return response.text();
+                    })
                     .then((text) => {
                         if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
                             const d = document.createElement('div');
@@ -415,7 +415,7 @@
     }
 
     function getImageId(url) {
-        const regex = (/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
+        const regex = new RegExp('https?://(?:www\\.|philomena\\.)?(?:(?:derpibooru\\.org|trixiebooru\\.org)/(?:images/)?(\\d+)(?:\\?.*|/|\\.html)?|derpicdn\\.net/img/(?:view/|download/)?\\d+/\\d+/\\d+/(\\d+))', 'i');
         const array = url.match(regex);
         return (array !== null) ? array[1] || array[2] : null;
     }
@@ -428,7 +428,7 @@
 
     function insertButton(displayText) {
 
-        const commentsBlock = $('.js-editable-comments');
+        const commentsBlock = $('#comments');
 
         const ele = document.createElement('div');
         ele.className = 'block__header';
@@ -445,12 +445,12 @@
         return ele;
     }
 
-    function loadComments(e, nextPage, lastPage) {
-        e.target.parentElement.remove();
-
-        const btn = insertButton('Loading...');
+    function loadComments(e, nextPage) {
+        const btn = document.getElementById('comment_loading_button');
         const imageId = getImageId(window.location.href);
-        const fetchURL = window.location.origin + '/images/' + imageId + '/comments?id=' + imageId + '&page=' + nextPage;
+        const fetchURL = `${window.location.origin}/images/${imageId}/comments?page=${nextPage}`;
+
+        btn.firstElementChild.innerText = 'Loading...';
 
         fetch(fetchURL, {credentials: 'same-origin'})  // cookie needed for correct pagination
             .then((response) => response.text())
@@ -460,10 +460,10 @@
                 const range = document.createRange();
 
                 ele.innerHTML = text;
-                range.selectNodeContents(ele.firstChild);
+                range.selectNodeContents(ele);
 
                 const fragment = range.extractContents();
-                const commentsBlock = document.getElementById('image_comments');
+                const commentsBlock = document.getElementById('comments');
 
                 // update pagination blocks
                 commentsBlock.replaceChild(fragment.firstChild, commentsBlock.firstElementChild);
@@ -483,10 +483,13 @@
 
                 // configure button to load the next batch of comments
                 btn.remove();
-                if (nextPage < lastPage) {
+
+                const navbar = $('nav', commentsBlock);
+                const btnNextPage = [...navbar.childNodes].find(node => node.innerHTML === 'Next ›');
+                if (btnNextPage) {
                     const btn = insertButton('Load more comments');
                     btn.addEventListener('click', (e) => {
-                        loadComments(e, nextPage + 1, lastPage);
+                        loadComments(e, nextPage + 1);
                     });
                 }
 
@@ -499,7 +502,7 @@
 
         const links = $$(`.communication__body__text a[href*="#${selector}"]`, sourceCommentBody);
         const sourceCommentID = sourceCommentBody.id.slice(selector.length);
-        const ele = $('.communication__body__sender-name', sourceCommentBody);
+        const ele = $('.communication__body__sender-name > strong', sourceCommentBody);
         const sourceAuthor = (ele.firstElementChild !== null && ele.firstElementChild.matches('a')) ? ele.firstElementChild.innerText : ele.innerHTML;
 
         links.forEach((link) => {
@@ -575,23 +578,25 @@
         // If other pages had replied to this comment
         if (backlinksCache[sourceCommentID] !== undefined) {
             backlinksCache[sourceCommentID].forEach((backlink) => {
-                insertBacklink(backlink, sourceCommentID);
+                insertBacklink(backlink, sourceCommentID, isForumPost);
             });
         }
 
     });
 
     // Load and append more comments
-    NodeCreationObserver.onCreation('#image_comments nav>a.js-next', function (btnNextPage) {
+    NodeCreationObserver.onCreation('#comments nav.pagination', function (navbar) {
         if (document.getElementById('comment_loading_button') !== null) return;
 
-        const btnLastPage = btnNextPage.nextElementSibling;
-        const nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
-        const lastPage = parseInt(getQueryVariable('page', btnLastPage), 10);
-        const btn = insertButton('Load more comments');
+        const childNodes = [...navbar.childNodes];
+        const btnNextPage = childNodes.find(node => node.innerHTML === 'Next ›');
+        if (!btnNextPage) return;
 
+        const nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
+
+        const btn = insertButton('Load more comments');
         btn.addEventListener('click', (e) => {
-            loadComments(e, nextPage, lastPage);
+            loadComments(e, nextPage);
         });
     });
 
