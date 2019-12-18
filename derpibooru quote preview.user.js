@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.4.15
+// @version      1.4.16
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -12,11 +12,11 @@
 // @include      https://www.derpibooru.org/*
 // @include      https://www.trixiebooru.org/*
 // @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
-// @grant        GM_addStyle
+// @grant        none
 // @inject-into  content
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
-// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?v1.0.4
+// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?v1.0.5
 // ==/UserScript==
 
 (function () {
@@ -234,7 +234,7 @@
                 displayHover(fetchCache[targetCommentID], sourceLink);
             } else {
                 const imageId = getImageId(sourceLink.href);
-                fetch(`${window.location.origin}/images/${imageId}/comments/${targetCommentID}.hrml`, {credentials: 'same-origin'})
+                fetch(`${window.location.origin}/images/${imageId}/comments/${targetCommentID}`, {credentials: 'same-origin'})
                     .then((response) => response.text())
                     .then((text) => {
                         if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
