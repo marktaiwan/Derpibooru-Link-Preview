@@ -558,14 +558,6 @@
                 });
             }
 
-            // ignore quoted comments
-            // this is terrible
-            for (let i = 0, ele = link; i < 3; i++) {
-                ele = ele.nextSibling;
-                if (ele == null) break;
-                if (i == 2 && ele.nodeType == 1 && ele.matches('blockquote[title]')) return;
-            }
-
             link.addEventListener('mouseenter', () => {
                 linkEnter(link, targetCommentID, isForumPost);
             });
