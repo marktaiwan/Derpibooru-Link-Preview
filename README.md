@@ -13,7 +13,8 @@
 Once installed, settings could be found on Derpibooru's [Settings](https://derpibooru.org/settings?active_tab=userscript) page.
 
 #### Installation
-Requires Greasemonkey on Firefox, or Tampermonkey on Chrome  
+Requires [Violentmonkey](https://violentmonkey.github.io/)
+[Download from Github](https://github.com/marktaiwan/Derpibooru-Link-Preview/raw/master/derpibooru%20quote%20preview.user.js)
 [Download from OpenUserJS](//openuserjs.org/scripts/mark.taiwangmail.com/Derpibooru_Comment_Enhancements)  
 [Download from GreasyFork](//greasyfork.org/en/scripts/23354-derpibooru-comment-enhancements)
 
