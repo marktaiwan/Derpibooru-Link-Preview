@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Derpibooru Comment Enhancements
 // @description  Improvements to Derpibooru's comment section
-// @version      1.5.0
+// @version      1.5.1
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
