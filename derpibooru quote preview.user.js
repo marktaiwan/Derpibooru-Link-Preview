@@ -7,8 +7,8 @@
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
-// @match        https://*.derpibooru.org/* 
-// @match        https://*.trixiebooru.org/* 
+// @match        https://*.derpibooru.org/*
+// @match        https://*.trixiebooru.org/*
 // @grant        none
 // @inject-into  content
 // @noframes
