@@ -10,7 +10,7 @@
  - Forum link preview limited to posts on the same page.
 
 ### Settings
-Once installed, settings could be found on Derpibooru's [Settings](https://derpibooru.org/settings?active_tab=userscript) page.
+Once installed, settings could be found on Derpibooru's [Settings](https://derpibooru.org/settings/edit?active_tab=userscript) page.
 
 #### Installation
 Requires [Violentmonkey](https://violentmonkey.github.io/)  
