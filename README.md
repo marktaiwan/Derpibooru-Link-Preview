@@ -1,5 +1,4 @@
-#### ~Derpibooru Comment Preview~
-## Derpibooru Comment Enhancements
+## Furbooru Comment Enhancements
 
 ### Features
 
@@ -10,14 +9,12 @@
  - Forum link preview limited to posts on the same page.
 
 ### Settings
-Once installed, settings could be found on Derpibooru's [Settings](https://derpibooru.org/settings/edit?active_tab=userscript) page.
+Once installed, settings could be found on Derpibooru's [Settings](https://furbooru.org/settings/edit?active_tab=userscript) page.
 
 #### Installation
 Requires [Violentmonkey](https://violentmonkey.github.io/)  
-[Download from Github](https://github.com/marktaiwan/Derpibooru-Link-Preview/raw/master/derpibooru%20quote%20preview.user.js)  
-[Download from OpenUserJS](//openuserjs.org/scripts/mark.taiwangmail.com/Derpibooru_Comment_Enhancements)  
-[Download from GreasyFork](//greasyfork.org/en/scripts/23354-derpibooru-comment-enhancements)  
+[Download from Github](https://github.com/marktaiwan/Derpibooru-Link-Preview/raw/furbooru/furbooru-comment-enhancements.user.js)  
 
 #### In action
-![screenshot](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/master/screenshots/demo.gif)
-![settings](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/master/screenshots/user-settings.png)
+![screenshot](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/furbooru/screenshots/demo.gif)
+![settings](https://raw.githubusercontent.com/marktaiwan/Derpibooru-Quote-Preview/furbooru/screenshots/user-settings.png)
