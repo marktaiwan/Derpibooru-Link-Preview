@@ -603,8 +603,13 @@
                 // image is on Ponerpics
                 anchor.href = `/${imageId}`;
             } else {
-                // camo
-                anchor.href = decodeURIComponent(img.src.substr(img.src.indexOf('?url=') + 5));
+                // site currently doesn't use camo
+                const index = img.src.indexOf('?url=');
+                if (index >= 0) {
+                    anchor.href = decodeURIComponent(img.src.substr(index + 5));
+                } else {
+                    anchor.href = img.src;
+                }
             }
             anchor.appendChild(img);
             imgParent.appendChild(anchor);
