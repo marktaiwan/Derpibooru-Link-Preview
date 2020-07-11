@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ponerpics Comment Enhancements
 // @description  Improvements to Ponerpics's comment section
-// @version      1.5.5
+// @version      1.5.6
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -233,16 +233,33 @@
         }
         else if (!isForumPost) {
 
+            const handleResponseError = (response) => (response.ok) ? response : Promise.reject('Unable to fetch from: ' + response.url);
+            const fetchCommentHtml = (id, commentId) => fetch(
+                `${window.location.origin}/images/${id}/comments/${commentId}`,
+                {credentials: 'same-origin'}
+            ).then(handleResponseError);
+
             // External post, display from cached response if possible
             if (fetchCache[targetCommentID] !== undefined) {
                 displayHover(fetchCache[targetCommentID], sourceLink);
             } else {
                 const imageId = getImageId(sourceLink.href);
-                fetch(`${window.location.origin}/images/${imageId}/comments/${targetCommentID}`, {credentials: 'same-origin'})
-                    .then((response) => {
-                        if (!response.ok) throw new Error('Unable to fetch external comment.');
-                        return response.text();
+                fetchCommentHtml(imageId, targetCommentID)
+                    .then((response) => (response.url !== window.location.href)
+                        ? response
+                        : Promise.reject(new Error('image_merged'))
+                    )
+                    .catch(e => {
+                        if (e.message !== 'image_merged') throw e;
+
+                        // target image merged
+                        // use the comments api to find the new image id
+                        return fetch(`${window.location.origin}/api/v1/json/comments/${targetCommentID}`)
+                            .then(handleResponseError)
+                            .then(response => response.json())
+                            .then(json => fetchCommentHtml(json.comment.image_id, targetCommentID));
                     })
+                    .then(response => response.text())
                     .then((text) => {
                         if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
                             const d = document.createElement('div');
