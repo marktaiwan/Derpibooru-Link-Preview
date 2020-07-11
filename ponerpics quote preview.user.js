@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ponerpics Comment Enhancements
 // @description  Improvements to Ponerpics's comment section
-// @version      1.5.3
+// @version      1.5.5
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
