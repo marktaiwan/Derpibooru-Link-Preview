@@ -525,7 +525,7 @@
                 insertBacklink(backlink, targetCommentID, isForumPost);
             }
 
-            if (DISABLE_NATIVE_PREVIEW) {
+            if (DISABLE_NATIVE_PREVIEW && !isForumPost) {
                 link.addEventListener('click', (e) => {
                     e.stopPropagation();
                     e.preventDefault();
