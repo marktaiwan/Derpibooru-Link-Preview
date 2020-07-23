@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twibooru Comment Enhancements
 // @description  Improvements to Twibooru's comment section
-// @version      1.4.16
+// @version      1.5.6
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
