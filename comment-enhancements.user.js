@@ -12,7 +12,7 @@
 // @inject-into  content
 // @noframes
 // @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
-// @require      https://openuserjs.org/src/libs/mark.taiwangmail.com/Derpibooru_Unified_Userscript_UI_Utility.js?v1.2.3
+// @require      https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.3
 // ==/UserScript==
 
 (function () {
