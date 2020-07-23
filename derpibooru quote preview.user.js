@@ -1,17 +1,13 @@
 // ==UserScript==
-// @name         Derpibooru Comment Enhancements
-// @description  Improvements to Derpibooru's comment section
+// @name         Twibooru Comment Enhancements
+// @description  Improvements to Twibooru's comment section
 // @version      1.4.16
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
 // @homepageURL  https://github.com/marktaiwan/Derpibooru-Link-Preview
 // @supportURL   https://github.com/marktaiwan/Derpibooru-Link-Preview/issues
-// @include      https://derpibooru.org/*
-// @include      https://trixiebooru.org/*
-// @include      https://www.derpibooru.org/*
-// @include      https://www.trixiebooru.org/*
-// @include      /^https?://(www\.)?(derpibooru|trixiebooru)\.org(/.*|)$/
+// @match        https://*.twibooru.org/*
 // @grant        none
 // @inject-into  content
 // @noframes
@@ -24,7 +20,7 @@
 
     // ==== User Config ====
 
-    const config = ConfigManager('Derpibooru Comment Enhancements', 'derpi_comment_enhancements');
+    const config = ConfigManager('Twibooru Comment Enhancements', 'comment_enhancements');
     config.registerSetting({
         title: 'Linkify images',
         key: 'link_images',
@@ -415,7 +411,7 @@
     }
 
     function getImageId(url) {
-        const regex = (/https?:\/\/(?:www\.)?(?:(?:derpibooru\.org|trixiebooru\.org)\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|derpicdn\.net\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
+        const regex = (/https?:\/\/(?:www\.)?(?:twibooru\.org\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|cdn\.twibooru\.org\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
         const array = url.match(regex);
         return (array !== null) ? array[1] || array[2] : null;
     }
@@ -604,10 +600,10 @@
             const anchor = document.createElement('a');
             const imageId = getImageId(img.src);
             if (imageId !== null) {
-                // image is on Derpibooru
+                // image is on Twibooru
                 anchor.href = `/${imageId}`;
             } else {
-                // camo.derpicdn.net
+                // camo
                 anchor.href = decodeURIComponent(img.src.substr(img.src.indexOf('?url=') + 5));
             }
             anchor.appendChild(img);
