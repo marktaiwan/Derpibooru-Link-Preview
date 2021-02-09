@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ponybooru Comment Enhancements
 // @description  Improvements to Ponybooru's comment section
-// @version      1.5.6
+// @version      1.5.7
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
