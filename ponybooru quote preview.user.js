@@ -431,7 +431,7 @@
     }
 
     function getImageId(url) {
-        const regex = new RegExp('https?://(?:(?:www\\.)?(?:cdn\\.ponybooru\\.org)/(?:images/)?(\\d+)(?:\\?.*|/|\\.html)?|ponybooru\\.org/img/(?:view/|download/)?\\d+/\\d+/\\d+/(\\d+))', 'i');
+        const regex = new RegExp('https?://(?:(?:www\\.)?(?:ponybooru\\.org)/(?:images/)?(\\d+)(?:\\?.*|/|\\.html)?|cdn\\.ponybooru\\.org/img/(?:view/|download/)?\\d+/\\d+/\\d+/(\\d+))', 'i');
         const array = url.match(regex);
         return (array !== null) ? array[1] || array[2] : null;
     }
