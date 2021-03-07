@@ -346,13 +346,11 @@
             ele = document.createElement('div');
             ele.className = 'block__content comment_backlinks';
             ele.style.fontSize = '12px';
+            ele.style.borderBottom = 'none';
 
-            // Firefox 57 Workaround: getComputedStyle(commentBody.firstChild)['border-top'] returns an empty string
-            ele.style.borderTopStyle = window.getComputedStyle(commentBody.firstChild)['border-top-style'];
-            ele.style.borderTopWidth = window.getComputedStyle(commentBody.firstChild)['border-top-width'];
-            ele.style.borderTopColor = window.getComputedStyle(commentBody.firstChild)['border-top-color'];
-
-            commentBody.insertBefore(ele, $('.communication__options', commentBody));
+            const wrapper = document.createElement('div');
+            wrapper.append(ele);
+            commentBody.insertBefore(wrapper, $('.communication__options', commentBody));
         }
         return ele;
     }
