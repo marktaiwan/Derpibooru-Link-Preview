@@ -563,7 +563,7 @@
         // If other pages had replied to this comment
         if (backlinksCache[sourceCommentID] !== undefined) {
             backlinksCache[sourceCommentID].forEach((backlink) => {
-                insertBacklink(backlink, sourceCommentID);
+                insertBacklink(backlink, sourceCommentID, isForumPost);
             });
         }
 
