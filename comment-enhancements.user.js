@@ -238,7 +238,7 @@
                 displayHover(fetchCache[targetCommentID], sourceLink);
             } else {
                 const imageId = getImageId(sourceLink.href);
-                fetch(`${window.location.origin}/images/${imageId}/comments/${targetCommentID}`, {credentials: 'same-origin'})
+                fetch(`${window.location.origin}/posts/${imageId}/comments/${targetCommentID}`, {credentials: 'same-origin'})
                     .then((response) => response.text())
                     .then((text) => {
                         if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
@@ -409,7 +409,7 @@
     }
 
     function getImageId(url) {
-        const regex = (/https?:\/\/(?:www\.)?(?:twibooru\.org\/(?:images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|cdn\.twibooru\.org\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
+        const regex = (/https?:\/\/(?:www\.)?(?:twibooru\.org\/(?:posts\/|images\/)?(\d{1,})(?:\?|\?.{1,}|\/|\.html)?|cdn\.twibooru\.org\/img\/(?:view\/|download\/)?\d{1,}\/\d{1,}\/\d{1,}\/(\d+))/i);
         const array = url.match(regex);
         return (array !== null) ? array[1] || array[2] : null;
     }
@@ -444,7 +444,7 @@
 
         const btn = insertButton('Loading...');
         const imageId = getImageId(window.location.href);
-        const fetchURL = window.location.origin + '/images/' + imageId + '/comments?id=' + imageId + '&page=' + nextPage;
+        const fetchURL = window.location.origin + '/posts/' + imageId + '/comments?id=' + imageId + '&page=' + nextPage;
 
         fetch(fetchURL, {credentials: 'same-origin'})  // cookie needed for correct pagination
             .then((response) => response.text())
