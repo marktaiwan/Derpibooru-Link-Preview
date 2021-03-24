@@ -614,6 +614,8 @@
 
             const imgParent = img.parentElement;
             const anchor = document.createElement('a');
+            anchor.referrerPolicy = 'origin';
+            anchor.relList.add('noreferrer', 'noopener');
             const imageId = getImageId(img.src);
             if (imageId !== null) {
                 // image is on Derpibooru
