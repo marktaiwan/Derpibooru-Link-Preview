@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twibooru Comment Enhancements
 // @description  Improvements to Twibooru's comment section
-// @version      1.5.10
+// @version      1.5.11
 // @author       Marker
 // @license      MIT
 // @namespace    https://github.com/marktaiwan/
@@ -238,7 +238,7 @@
                 displayHover(fetchCache[targetCommentID], sourceLink);
             } else {
                 const imageId = getImageId(sourceLink.href);
-                fetch(`${window.location.origin}/posts/${imageId}/comments/${targetCommentID}`, {credentials: 'same-origin'})
+                fetch(`${window.location.origin}/posts/${imageId}/comments/${targetCommentID}.html`, {credentials: 'same-origin'})
                     .then((response) => response.text())
                     .then((text) => {
                         if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
