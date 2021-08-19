@@ -12,7 +12,7 @@
 // @grant        none
 // @inject-into  content
 // @noframes
-// @require      https://openuserjs.org/src/libs/soufianesakhi/node-creation-observer.js
+// @require      https://raw.githubusercontent.com/soufianesakhi/node-creation-observer-js/master/release/node-creation-observer-latest.js
 // @require      https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.3
 // ==/UserScript==
 
@@ -59,6 +59,7 @@
 
     // ==== /User Config ====
 
+    NodeCreationObserver.init('comment-enhancements-observer')
     const HOVER_ATTRIBUTE = 'comment-preview-active';
     const fetchCache = {};
     const backlinksCache = {};
