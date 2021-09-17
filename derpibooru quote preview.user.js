@@ -622,8 +622,33 @@
                 // image is on Derpibooru
                 anchor.href = `/${imageId}`;
             } else {
-                // camo.derpicdn.net
-                anchor.href = decodeURIComponent(img.src.substr(img.src.indexOf('?url=') + 5));
+                // external image: ext.derpicdn.net link
+                const src = img.src;
+                const b64ReTempplate = '(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}(?:==)?|[A-Za-z0-9-_]{3}=?)?';
+                const extRegExp = new RegExp(`/${b64ReTempplate}/(${b64ReTempplate})$`);
+
+                // https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
+                const b64DecodeUnicode = str => {
+                    // Going backwards: from bytestream, to percent-encoding, to original string.
+                    return decodeURIComponent(
+                        window.atob(str)
+                            .split('')
+                            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                            .join('')
+                    );
+                };
+
+                const extResult = src.match(extRegExp);
+                if (extResult[1]) {
+                    // Note: ext uses RFC 4648 variant of Base64 to encode digest and
+                    // url, which replaces '/' and '+' with '_' and '-' respectively.
+                    const b64string = extResult[1]
+                        .replace(/_/g, '/')
+                        .replace(/-/g, '+');
+                    anchor.href = b64DecodeUnicode(b64string);
+                } else {
+                    throw new Error('Unable to linkify image with src: ' + src);
+                }
             }
             anchor.appendChild(img);
             imgParent.appendChild(anchor);
