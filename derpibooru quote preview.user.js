@@ -59,7 +59,7 @@
 
     // ==== /User Config ====
 
-    NodeCreationObserver.init('comment-enhancements-observer')
+    NodeCreationObserver.init('comment-enhancements-observer');
     const HOVER_ATTRIBUTE = 'comment-preview-active';
     const fetchCache = {};
     const backlinksCache = {};
