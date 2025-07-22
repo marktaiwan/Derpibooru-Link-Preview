@@ -19,8 +19,6 @@ export default defineConfig([
     },
     extends: [
       'js/recommended',
-      tseslint.configs.recommended,
-      tseslint.configs.stylistic,
       stylistic.configs.customize({
         arrowParens: false,
         blockSpacing: true,
@@ -114,6 +112,18 @@ export default defineConfig([
           'requireLast': false,
         },
         'multilineDetection': 'brackets',
+        'overrides': {
+          'typeLiteral': {
+            'multiline': {
+              'delimiter': 'comma',
+              'requireLast': true,
+            },
+            'singleline': {
+              'delimiter': 'comma',
+              'requireLast': false,
+            },
+          },
+        },
       }],
       '@stylistic/multiline-ternary': 'off',
       '@stylistic/no-extra-semi': 'warn',
@@ -129,6 +139,10 @@ export default defineConfig([
   },
   {
     name: 'my-rules-ts',
+    extends: [
+      tseslint.configs.recommended,
+      tseslint.configs.stylistic,
+    ],
     rules: {
       '@typescript-eslint/array-type': ['error', {
         'default': 'array-simple'
