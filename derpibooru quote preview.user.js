@@ -159,13 +159,12 @@
 
       // calculate link position
       const linkRect = sourceLink.getBoundingClientRect();
-      const linkTop = linkRect.top + viewportPosition().top;
-      const linkLeft = linkRect.left + viewportPosition().left;
+      const linkTop = linkRect.top + window.scrollY;
+      const linkLeft = linkRect.left + window.scrollX;
 
       const commentRect = comment.getBoundingClientRect();
       let commentTop;
       let commentLeft;
-
 
       if (sourceLink.parentElement.classList.contains('comment_backlinks')) {
         // When there is room, place the preview below the link,
@@ -197,7 +196,7 @@
 
         } else {
 
-          commentTop = viewportPosition().top + PADDING;
+          commentTop = window.scrollY + PADDING;
           commentLeft = linkLeft + linkRect.width + PADDING;
 
         }
@@ -306,14 +305,6 @@
       }
 
       if (preview !== null) preview.parentElement.removeChild(preview);
-    }
-
-    // Chrome/Firefox compatibility hack for getting viewport position
-    function viewportPosition() {
-      return {
-        top: (document.documentElement.scrollTop || document.body.scrollTop),
-        left: (document.documentElement.scrollLeft || document.body.scrollLeft)
-      };
     }
 
     function elementInViewport(el) {
