@@ -16,6 +16,7 @@
 // @require      https://github.com/marktaiwan/Derpibooru-Unified-Userscript-Ui/raw/master/derpi-four-u.js?v1.2.3
 // ==/UserScript==
 
+/* global NodeCreationObserver ConfigManager */
 (function () {
     'use strict';
 
@@ -23,33 +24,33 @@
 
     const config = ConfigManager('Derpibooru Comment Enhancements', 'derpi_comment_enhancements');
     config.registerSetting({
-        title: 'Linkify images',
-        key: 'link_images',
-        description: 'Link embedded images to their sources. Images already containing links will be unaffected.',
-        type: 'checkbox',
-        defaultValue: false
+      title: 'Linkify images',
+      key: 'link_images',
+      description: 'Link embedded images to their sources. Images already containing links will be unaffected.',
+      type: 'checkbox',
+      defaultValue: false
     });
     config.registerSetting({
-        title: 'Disable native preview',
-        key: 'disable_native_preview',
-        description: 'This will disable the site\'s native feature that inserts the linked comment above the current one when clicked, and instead navigates to the targted comment.',
-        type: 'checkbox',
-        defaultValue: false
+      title: 'Disable native preview',
+      key: 'disable_native_preview',
+      description: 'This will disable the site\'s native feature that inserts the linked comment above the current one when clicked, and instead navigates to the targted comment.',
+      type: 'checkbox',
+      defaultValue: false
     });
     const spoilerSettings = config.addFieldset('Reveal spoiler...');
     spoilerSettings.registerSetting({
-        title: '...in comment preview',
-        key: 'show_preview_spoiler',
-        description: 'Reveal spoilers in the pop-up preview.',
-        type: 'checkbox',
-        defaultValue: true
+      title: '...in comment preview',
+      key: 'show_preview_spoiler',
+      description: 'Reveal spoilers in the pop-up preview.',
+      type: 'checkbox',
+      defaultValue: true
     });
     spoilerSettings.registerSetting({
-        title: '...in comment highlight',
-        key: 'show_highlight_spoiler',
-        description: 'Reveal spoilers in the highlighted comment.',
-        type: 'checkbox',
-        defaultValue: true
+      title: '...in comment highlight',
+      key: 'show_highlight_spoiler',
+      description: 'Reveal spoilers in the highlighted comment.',
+      type: 'checkbox',
+      defaultValue: true
     });
 
     const LINK_IMAGES = config.getEntry('link_images');
@@ -65,11 +66,11 @@
     const backlinksCache = {};
 
     function $(selector, parent = document) {
-        return parent.querySelector(selector);
+      return parent.querySelector(selector);
     }
 
     function $$(selector, parent = document) {
-        return parent.querySelectorAll(selector);
+      return parent.querySelectorAll(selector);
     }
 
     /*
@@ -78,33 +79,33 @@
     */
     function timeAgo(args) {
 
-        const strings = {
-            seconds: 'less than a minute',
-            minute: 'about a minute',
-            minutes: '%d minutes',
-            hour: 'about an hour',
-            hours: 'about %d hours',
-            day: 'a day',
-            days: '%d days',
-            month: 'about a month',
-            months: '%d months',
-            year: 'about a year',
-            years: '%d years',
-        };
+      const strings = {
+        seconds: 'less than a minute',
+        minute: 'about a minute',
+        minutes: '%d minutes',
+        hour: 'about an hour',
+        hours: 'about %d hours',
+        day: 'a day',
+        days: '%d days',
+        month: 'about a month',
+        months: '%d months',
+        year: 'about a year',
+        years: '%d years',
+      };
 
-        function distance(time) {
-            return new Date() - time;
-        }
+      function distance(time) {
+        return new Date() - time;
+      }
 
-        function substitute(key, amount) {
-            return strings[key].replace('%d', Math.round(amount));
-        }
+      function substitute(key, amount) {
+        return strings[key].replace('%d', Math.round(amount));
+      }
 
-        function setTimeAgo(el) {
-            const date = new Date(el.getAttribute('datetime'));
-            const distMillis = distance(date);
+      function setTimeAgo(el) {
+        const date = new Date(el.getAttribute('datetime'));
+        const distMillis = distance(date);
 
-            /* eslint-disable no-multi-spaces */
+            /* eslint-disable */
 
             const seconds = Math.abs(distMillis) / 1000;
             const minutes = seconds / 60;
@@ -126,532 +127,528 @@
               years   < 1.5 && substitute('year', 1)          ||
                                substitute('years', years);
 
-            /* eslint-enable no-multi-spaces */
+            /* eslint-enable */
 
-            if (!el.getAttribute('title')) {
-                el.setAttribute('title', el.textContent);
-            }
-            el.textContent = words + (distMillis < 0 ? ' from now' : ' ago');
+        if (!el.getAttribute('title')) {
+          el.setAttribute('title', el.textContent);
         }
-        [].forEach.call(args, el => setTimeAgo(el));
+        el.textContent = words + (distMillis < 0 ? ' from now' : ' ago');
+      }
+      [].forEach.call(args, el => setTimeAgo(el));
     }
 
     function displayHover(comment, sourceLink) {
-        const PADDING = 5; // in pixels
+      const PADDING = 5;  // in pixels
 
-        comment = comment.cloneNode(true);
-        comment.id = 'hover_preview';
-        comment.style.position = 'absolute';
-        comment.style.maxWidth = '980px';
-        comment.style.minWidth = '490px';
-        comment.style.boxShadow = '0px 0px 12px 0px rgba(0, 0, 0, 0.4)';
+      comment = comment.cloneNode(true);
+      comment.id = 'hover_preview';
+      comment.style.position = 'absolute';
+      comment.style.maxWidth = '980px';
+      comment.style.minWidth = '490px';
+      comment.style.boxShadow = '0px 0px 12px 0px rgba(0, 0, 0, 0.4)';
 
-        if (SHOW_PREVIEW_SPOILER) {
-            revealSpoiler(comment);
-        }
+      if (SHOW_PREVIEW_SPOILER) {
+        revealSpoiler(comment);
+      }
 
-        // relative time
-        timeAgo($$('time', comment));
+      // relative time
+      timeAgo($$('time', comment));
 
-        const container = document.getElementById('comments') || document.getElementById('content');
-        if (container) container.appendChild(comment);
+      const container = document.getElementById('comments') || document.getElementById('content');
+      if (container) container.appendChild(comment);
 
-        // calculate link position
-        const linkRect = sourceLink.getBoundingClientRect();
-        const linkTop = linkRect.top + viewportPosition().top;
-        const linkLeft = linkRect.left + viewportPosition().left;
+      // calculate link position
+      const linkRect = sourceLink.getBoundingClientRect();
+      const linkTop = linkRect.top + viewportPosition().top;
+      const linkLeft = linkRect.left + viewportPosition().left;
 
-        const commentRect = comment.getBoundingClientRect();
-        let commentTop;
-        let commentLeft;
+      const commentRect = comment.getBoundingClientRect();
+      let commentTop;
+      let commentLeft;
 
 
-        if (sourceLink.parentElement.classList.contains('comment_backlinks')) {
-            // When there is room, place the preview below the link,
-            // otherwise place it above the link
-            if (document.documentElement.clientHeight - linkRect.bottom > commentRect.height + PADDING) {
+      if (sourceLink.parentElement.classList.contains('comment_backlinks')) {
+        // When there is room, place the preview below the link,
+        // otherwise place it above the link
+        if (document.documentElement.clientHeight - linkRect.bottom > commentRect.height + PADDING) {
 
-                commentTop = linkTop + linkRect.height + PADDING;
-                commentLeft = (commentRect.width + linkLeft < document.documentElement.clientWidth) ? (
-                    linkLeft
-                ) : (
-                    document.documentElement.clientWidth - (commentRect.width + PADDING)
-                );
+          commentTop = linkTop + linkRect.height + PADDING;
+          commentLeft = (commentRect.width + linkLeft < document.documentElement.clientWidth)
+            ? linkLeft
+            : document.documentElement.clientWidth - (commentRect.width + PADDING);
 
-            } else {
-
-                commentTop = linkTop - commentRect.height - PADDING;
-                commentLeft = (commentRect.width + linkLeft < document.documentElement.clientWidth) ? (
-                    linkLeft
-                ) : (
-                    document.documentElement.clientWidth - (commentRect.width + PADDING)
-                );
-
-            }
         } else {
-            // When there is room, place the preview above the link
-            // otherwise place it to the right and aligns it to the top of viewport
-            if (linkRect.top > commentRect.height + PADDING) {
 
-                commentTop = linkTop - commentRect.height - PADDING;
-                commentLeft = (commentRect.width + linkLeft < document.documentElement.clientWidth) ? (
-                    linkLeft
-                ) : (
-                    document.documentElement.clientWidth - (commentRect.width + PADDING)
-                );
+          commentTop = linkTop - commentRect.height - PADDING;
+          commentLeft = (commentRect.width + linkLeft < document.documentElement.clientWidth)
+            ? linkLeft
+            : document.documentElement.clientWidth - (commentRect.width + PADDING);
 
-            } else {
-
-                commentTop = viewportPosition().top + PADDING;
-                commentLeft = linkLeft + linkRect.width + PADDING;
-
-            }
         }
+      } else {
+        // When there is room, place the preview above the link
+        // otherwise place it to the right and aligns it to the top of viewport
+        if (linkRect.top > commentRect.height + PADDING) {
 
-        comment.style.top = commentTop + 'px';
-        comment.style.left = commentLeft + 'px';
+          commentTop = linkTop - commentRect.height - PADDING;
+          commentLeft = (commentRect.width + linkLeft < document.documentElement.clientWidth)
+            ? linkLeft
+            : document.documentElement.clientWidth - (commentRect.width + PADDING);
+
+        } else {
+
+          commentTop = viewportPosition().top + PADDING;
+          commentLeft = linkLeft + linkRect.width + PADDING;
+
+        }
+      }
+
+      comment.style.top = commentTop + 'px';
+      comment.style.left = commentLeft + 'px';
     }
 
     function linkEnter(sourceLink, targetCommentID, isForumPost) {
-        sourceLink.setAttribute(HOVER_ATTRIBUTE, 1);
-        const selector = isForumPost ? 'post_' : 'comment_';
-        const targetComment = document.getElementById(selector + targetCommentID);
+      sourceLink.setAttribute(HOVER_ATTRIBUTE, 1);
+      const selector = isForumPost ? 'post_' : 'comment_';
+      const targetComment = document.getElementById(selector + targetCommentID);
 
-        if (targetComment !== null) {
+      if (targetComment !== null) {
 
-            highlightReplyLink(targetComment, sourceLink, isForumPost);
+        highlightReplyLink(targetComment, sourceLink, isForumPost);
 
-            if (!elementInViewport(targetComment)) {
-                displayHover(targetComment, sourceLink);
-            }
-            if (SHOW_HIGHLIGHT_SPOILER) {
-                revealSpoiler(targetComment);
-            }
-
-            // Highlight linked post
-            targetComment.children[0].style.backgroundColor = 'rgba(230,230,30,0.3)';
-            if ($('.comment_backlinks', targetComment) !== null) targetComment.children[1].style.backgroundColor = 'rgba(230,230,30,0.3)';
-
+        if (!elementInViewport(targetComment)) {
+          displayHover(targetComment, sourceLink);
         }
-        else if (!isForumPost) {
-
-            const handleResponseError = (response) => (response.ok) ? response : Promise.reject('Unable to fetch from: ' + response.url);
-            const fetchCommentHtml = (id, commentId) => fetch(
-                `${window.location.origin}/images/${id}/comments/${commentId}`,
-                {credentials: 'same-origin'}
-            ).then(handleResponseError);
-
-            // External post, display from cached response if possible
-            if (fetchCache[targetCommentID] !== undefined) {
-                displayHover(fetchCache[targetCommentID], sourceLink);
-            } else {
-                const imageId = getImageId(sourceLink.href);
-                fetchCommentHtml(imageId, targetCommentID)
-                    .then((response) => (response.url !== window.location.href)
-                        ? response
-                        : Promise.reject(new Error('image_merged'))
-                    )
-                    .catch(e => {
-                        if (e.message !== 'image_merged') throw e;
-
-                        // target image merged
-                        // use the comments api to find the new image id
-                        return fetch(`${window.location.origin}/api/v1/json/comments/${targetCommentID}`)
-                            .then(handleResponseError)
-                            .then(response => response.json())
-                            .then(json => fetchCommentHtml(json.comment.image_id, targetCommentID));
-                    })
-                    .then(response => response.text())
-                    .then((text) => {
-                        if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
-                            const d = document.createElement('div');
-                            d.innerHTML = text;
-                            fetchCache[targetCommentID] = d.firstChild;
-                            displayHover(d.firstChild, sourceLink);
-                        }
-                    });
-            }
-
+        if (SHOW_HIGHLIGHT_SPOILER) {
+          revealSpoiler(targetComment);
         }
+
+        // Highlight linked post
+        targetComment.children[0].style.backgroundColor = 'rgba(230,230,30,0.3)';
+        if ($('.comment_backlinks', targetComment) !== null) targetComment.children[1].style.backgroundColor = 'rgba(230,230,30,0.3)';
+
+      } else if (!isForumPost) {
+
+        const handleResponseError = response => (response.ok) ? response : Promise.reject('Unable to fetch from: ' + response.url);
+        const fetchCommentHtml = (id, commentId) => fetch(
+          `${window.location.origin}/images/${id}/comments/${commentId}`,
+          {credentials: 'same-origin'}
+        ).then(handleResponseError);
+
+        // External post, display from cached response if possible
+        if (fetchCache[targetCommentID] !== undefined) {
+          displayHover(fetchCache[targetCommentID], sourceLink);
+        } else {
+          const imageId = getImageId(sourceLink.href);
+          fetchCommentHtml(imageId, targetCommentID)
+            .then(response => (response.url !== window.location.href)
+              ? response
+              : Promise.reject(new Error('image_merged'))
+            )
+            .catch(e => {
+              if (e.message !== 'image_merged') throw e;
+
+              // target image merged
+              // use the comments api to find the new image id
+              return fetch(`${window.location.origin}/api/v1/json/comments/${targetCommentID}`)
+                .then(handleResponseError)
+                .then(response => response.json())
+                .then(json => fetchCommentHtml(json.comment.image_id, targetCommentID));
+            })
+            .then(response => response.text())
+            .then(text => {
+              if (fetchCache[targetCommentID] === undefined && sourceLink.getAttribute(HOVER_ATTRIBUTE) !== '0') {
+                const d = document.createElement('div');
+                d.innerHTML = text;
+                fetchCache[targetCommentID] = d.firstChild;
+                displayHover(d.firstChild, sourceLink);
+              }
+            });
+        }
+
+      }
     }
 
     function linkLeave(sourceLink, targetCommentID, isForumPost) {
-        sourceLink.setAttribute(HOVER_ATTRIBUTE, 0);
-        const selector = isForumPost ? 'post_' : 'comment_';
-        const targetComment = document.getElementById(selector + targetCommentID);
-        const preview = document.getElementById('hover_preview');
+      sourceLink.setAttribute(HOVER_ATTRIBUTE, 0);
+      const selector = isForumPost ? 'post_' : 'comment_';
+      const targetComment = document.getElementById(selector + targetCommentID);
+      const preview = document.getElementById('hover_preview');
 
-        if (targetComment !== null) {
-            // remove comment highlight
-            targetComment.children[0].style.backgroundColor = '';
-            if ($('.comment_backlinks', targetComment) !== null) targetComment.children[1].style.backgroundColor = '';
+      if (targetComment !== null) {
+        // remove comment highlight
+        targetComment.children[0].style.backgroundColor = '';
+        if ($('.comment_backlinks', targetComment) !== null) targetComment.children[1].style.backgroundColor = '';
 
-            // remove link highlight
-            let ele = sourceLink;
-            while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
-            const sourceCommentID = ele.id.slice(selector.length);
-            const list = $$('a[href$="#' + selector + sourceCommentID + '"]', targetComment);
-            for (let i = 0; i < list.length; i++) {
-                list[i].style.textDecoration = '';
-            }
-
-            // unreveal spoilers
-            // we use the 'reveal-preview-spoiler' attribute to avoid reverting spoilers manually revealed by users
-            const spoilers = $$('.spoiler-revealed[reveal-preview-spoiler]', targetComment);
-            const imgspoilers = $$('.imgspoiler-revealed[reveal-preview-spoiler]', targetComment);
-            for (const spoiler of spoilers) {
-                spoiler.classList.remove('spoiler-revealed');
-                spoiler.classList.add('spoiler');
-                spoiler.removeAttribute('reveal-preview-spoiler');
-            }
-            for (const imgspoiler of imgspoilers) {
-                imgspoiler.classList.remove('imgspoiler-revealed');
-                imgspoiler.classList.add('imgspoiler');
-                imgspoiler.removeAttribute('reveal-preview-spoiler');
-            }
+        // remove link highlight
+        let ele = sourceLink;
+        while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
+        const sourceCommentID = ele.id.slice(selector.length);
+        const list = $$('a[href$="#' + selector + sourceCommentID + '"]', targetComment);
+        for (let i = 0; i < list.length; i++) {
+          list[i].style.textDecoration = '';
         }
 
-        if (preview !== null) preview.parentElement.removeChild(preview);
+        // unreveal spoilers
+        // we use the 'reveal-preview-spoiler' attribute to avoid reverting spoilers manually revealed by users
+        const spoilers = $$('.spoiler-revealed[reveal-preview-spoiler]', targetComment);
+        const imgspoilers = $$('.imgspoiler-revealed[reveal-preview-spoiler]', targetComment);
+        for (const spoiler of spoilers) {
+          spoiler.classList.remove('spoiler-revealed');
+          spoiler.classList.add('spoiler');
+          spoiler.removeAttribute('reveal-preview-spoiler');
+        }
+        for (const imgspoiler of imgspoilers) {
+          imgspoiler.classList.remove('imgspoiler-revealed');
+          imgspoiler.classList.add('imgspoiler');
+          imgspoiler.removeAttribute('reveal-preview-spoiler');
+        }
+      }
+
+      if (preview !== null) preview.parentElement.removeChild(preview);
     }
 
     // Chrome/Firefox compatibility hack for getting viewport position
     function viewportPosition() {
-        return {
-            top: (document.documentElement.scrollTop || document.body.scrollTop),
-            left: (document.documentElement.scrollLeft || document.body.scrollLeft)
-        };
+      return {
+        top: (document.documentElement.scrollTop || document.body.scrollTop),
+        left: (document.documentElement.scrollLeft || document.body.scrollLeft)
+      };
     }
 
     function elementInViewport(el) {
 
-        // Calculate the ratio of post height and viewport height, and clamp it to a min/max value,
-        // and use it to decide whether to use highlight or preview on a comment that's partially in view.
-        // The script will prefer the use of highlights on long comments,
-        // when using the preview might take up most of the viewport
+      // Calculate the ratio of post height and viewport height, and clamp it to a min/max value,
+      // and use it to decide whether to use highlight or preview on a comment that's partially in view.
+      // The script will prefer the use of highlights on long comments,
+      // when using the preview might take up most of the viewport
 
-        const rect = el.getBoundingClientRect();
-        const ratio = Math.max(0.25, Math.min(0.95, rect.height / document.documentElement.clientHeight));
-        const margin = Math.round(rect.height * ratio);   // pixels outside of viewport before element is considered out of view
+      const rect = el.getBoundingClientRect();
+      const ratio = Math.max(0.25, Math.min(0.95, rect.height / document.documentElement.clientHeight));
+      const margin = Math.round(rect.height * ratio); // pixels outside of viewport before element is considered out of view
 
-        return (
-            rect.top + margin >= 0 &&
-            rect.bottom - margin <= document.documentElement.clientHeight
-        );
+      return (
+        rect.top + margin >= 0
+        && rect.bottom - margin <= document.documentElement.clientHeight
+      );
     }
 
     function createBacklinksContainer(commentBody) {
-        let ele = $('div.comment_backlinks', commentBody);
+      let ele = $('div.comment_backlinks', commentBody);
 
-        if (ele === null) {
+      if (ele === null) {
 
-            ele = document.createElement('div');
-            ele.className = 'block__content comment_backlinks';
-            ele.style.fontSize = '12px';
-            ele.style.borderBottom = 'none';
+        ele = document.createElement('div');
+        ele.className = 'block__content comment_backlinks';
+        ele.style.fontSize = '12px';
+        ele.style.borderBottom = 'none';
 
-            const wrapper = document.createElement('div');
-            wrapper.append(ele);
-            commentBody.insertBefore(wrapper, $('.communication__options', commentBody));
-        }
-        return ele;
+        const wrapper = document.createElement('div');
+        wrapper.append(ele);
+        commentBody.insertBefore(wrapper, $('.communication__options', commentBody));
+      }
+      return ele;
     }
 
     function insertBacklink(backlink, commentID, isForumPost) {
 
-        // add to cache
-        if (backlinksCache[commentID] === undefined) backlinksCache[commentID] = [];
-        if (backlinksCache[commentID].findIndex((ele) => (ele.hash == backlink.hash)) == -1) {
-            backlinksCache[commentID].push(backlink);
-        }
-        const selector = isForumPost ? 'post_' : 'comment_';
-        const commentBody = document.getElementById(selector + commentID);
-        if (commentBody !== null) {
-            const linksContainer = createBacklinksContainer(commentBody);
+      // add to cache
+      if (backlinksCache[commentID] === undefined) backlinksCache[commentID] = [];
+      if (backlinksCache[commentID].findIndex(ele => (ele.hash == backlink.hash)) == -1) {
+        backlinksCache[commentID].push(backlink);
+      }
+      const selector = isForumPost ? 'post_' : 'comment_';
+      const commentBody = document.getElementById(selector + commentID);
+      if (commentBody !== null) {
+        const linksContainer = createBacklinksContainer(commentBody);
 
-            // insertion sort the links so they are ordered by id
-            if (linksContainer.children.length > 0) {
-                const iLinkID = getCommentId(backlink);
+        // insertion sort the links so they are ordered by id
+        if (linksContainer.children.length > 0) {
+          const iLinkID = getCommentId(backlink);
 
-                for (let i = 0; i < linksContainer.children.length; i++) {
-                    const iTempID = getCommentId(linksContainer.children[i]);
+          for (let i = 0; i < linksContainer.children.length; i++) {
+            const iTempID = getCommentId(linksContainer.children[i]);
 
-                    if (iLinkID == iTempID) {  // prevent links to the same comment from being added multiple times
-                        return;
-                    }
-                    if (iLinkID < iTempID) {
-                        linksContainer.insertBefore(backlink, linksContainer.children[i]);
-                        return;
-                    }
-                }
+            // prevent links to the same comment from being added multiple times
+            if (iLinkID == iTempID) {
+              return;
             }
-            linksContainer.appendChild(backlink);
-            return;
+            if (iLinkID < iTempID) {
+              linksContainer.insertBefore(backlink, linksContainer.children[i]);
+              return;
+            }
+          }
         }
+        linksContainer.appendChild(backlink);
+        return;
+      }
 
     }
 
     function revealSpoiler(comment) {
-        const spoilers = $$('.spoiler', comment);
-        const imgspoilers = $$('.imgspoiler', comment);
+      const spoilers = $$('.spoiler', comment);
+      const imgspoilers = $$('.imgspoiler', comment);
 
-        for (const spoiler of spoilers) {
-            spoiler.classList.remove('spoiler');
-            spoiler.classList.add('spoiler-revealed');
-            spoiler.setAttribute('reveal-preview-spoiler', '1');
-        }
-        for (const imgspoiler of imgspoilers) {
-            imgspoiler.classList.remove('imgspoiler');
-            imgspoiler.classList.add('imgspoiler-revealed');
-            imgspoiler.setAttribute('reveal-preview-spoiler', '1');
-        }
+      for (const spoiler of spoilers) {
+        spoiler.classList.remove('spoiler');
+        spoiler.classList.add('spoiler-revealed');
+        spoiler.setAttribute('reveal-preview-spoiler', '1');
+      }
+      for (const imgspoiler of imgspoilers) {
+        imgspoiler.classList.remove('imgspoiler');
+        imgspoiler.classList.add('imgspoiler-revealed');
+        imgspoiler.setAttribute('reveal-preview-spoiler', '1');
+      }
     }
 
     function highlightReplyLink(comment, sourceLink, isForumPost) {
-        const selector = isForumPost ? 'post_' : 'comment_';
-        let ele = sourceLink;
+      const selector = isForumPost ? 'post_' : 'comment_';
+      let ele = sourceLink;
 
-        while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
+      while (ele.parentElement !== null && !ele.matches('article')) ele = ele.parentElement;
 
-        const sourceCommentID = ele.id.slice(selector.length);
-        const list = $$('a[href$="#' + selector + sourceCommentID + '"]', comment);
+      const sourceCommentID = ele.id.slice(selector.length);
+      const list = $$('a[href$="#' + selector + sourceCommentID + '"]', comment);
 
-        for (let i = 0; i < list.length; i++) {
-            list[i].style.textDecoration = 'underline dashed';
-        }
+      for (let i = 0; i < list.length; i++) {
+        list[i].style.textDecoration = 'underline dashed';
+      }
     }
 
     function getQueryVariable(key, HTMLAnchorElement) {
-        const array = HTMLAnchorElement.search.substring(1).split('&');
+      const array = HTMLAnchorElement.search.substring(1).split('&');
 
-        for (let i = 0; i < array.length; i++) {
-            if (key == array[i].split('=')[0]) {
-                return array[i].split('=')[1];
-            }
+      for (let i = 0; i < array.length; i++) {
+        if (key == array[i].split('=')[0]) {
+          return array[i].split('=')[1];
         }
+      }
     }
 
     function getImageId(url) {
-        const regex = new RegExp('https?://(?:www\\.|philomena\\.)?(?:(?:derpibooru\\.org|trixiebooru\\.org)/(?:images/)?(\\d+)(?:\\?.*|/|\\.html)?|derpicdn\\.net/img/(?:view/|download/)?\\d+/\\d+/\\d+/(\\d+))', 'i');
-        const array = url.match(regex);
-        return (array !== null) ? array[1] || array[2] : null;
+      const regex = new RegExp('https?://(?:www\\.|philomena\\.)?(?:(?:derpibooru\\.org|trixiebooru\\.org)/(?:images/)?(\\d+)(?:\\?.*|/|\\.html)?|derpicdn\\.net/img/(?:view/|download/)?\\d+/\\d+/\\d+/(\\d+))', 'i');
+      const array = url.match(regex);
+      return (array !== null) ? array[1] || array[2] : null;
     }
 
     function getCommentId(backlink) {
-        // the regex expects the comment id in the format of '#post_1234' or '#comment_5678'
-        const regex = new RegExp('^#(?:post_|comment_)(\\d+)$');
-        return parseInt(regex.exec(backlink.hash)[1], 10);
+      // the regex expects the comment id in the format of '#post_1234' or '#comment_5678'
+      const regex = new RegExp('^#(?:post_|comment_)(\\d+)$');
+      return parseInt(regex.exec(backlink.hash)[1], 10);
     }
 
     function insertButton(displayText) {
 
-        const commentsBlock = $('#comments');
+      const commentsBlock = $('#comments');
 
-        const ele = document.createElement('div');
-        ele.className = 'block__header';
-        ele.id = 'comment_loading_button';
-        ele.style.textAlign = 'center';
+      const ele = document.createElement('div');
+      ele.className = 'block__header';
+      ele.id = 'comment_loading_button';
+      ele.style.textAlign = 'center';
 
-        ele.appendChild(document.createElement('a'));
-        ele.firstChild.style.padding = '0px';
-        ele.firstChild.style.width = '100%';
-        ele.firstChild.innerText = displayText;
+      ele.appendChild(document.createElement('a'));
+      ele.firstChild.style.padding = '0px';
+      ele.firstChild.style.width = '100%';
+      ele.firstChild.innerText = displayText;
 
-        commentsBlock.insertBefore(ele, commentsBlock.lastElementChild);
+      commentsBlock.insertBefore(ele, commentsBlock.lastElementChild);
 
-        return ele;
+      return ele;
     }
 
-    function loadComments(e, nextPage) {
-        const btn = document.getElementById('comment_loading_button');
-        const imageId = getImageId(window.location.href);
-        const fetchURL = `${window.location.origin}/images/${imageId}/comments?page=${nextPage}`;
+    function loadComments(nextPage) {
+      const btn = document.getElementById('comment_loading_button');
+      const imageId = getImageId(window.location.href);
+      const fetchURL = `${window.location.origin}/images/${imageId}/comments?page=${nextPage}`;
 
-        btn.firstElementChild.innerText = 'Loading...';
+      btn.firstElementChild.innerText = 'Loading...';
 
-        fetch(fetchURL, {credentials: 'same-origin'})  // cookie needed for correct pagination
-            .then((response) => response.text())
-            .then((text) => {
-                // response text => documentFragment
-                const ele = document.createElement('div');
-                const range = document.createRange();
+      fetch(fetchURL, {credentials: 'same-origin'})  // cookie needed for correct pagination
+        .then(response => response.text())
+        .then(text => {
+          // response text => documentFragment
+          const ele = document.createElement('div');
+          const range = document.createRange();
 
-                ele.innerHTML = text;
-                range.selectNodeContents(ele);
+          ele.innerHTML = text;
+          range.selectNodeContents(ele);
 
-                const fragment = range.extractContents();
-                const commentsBlock = document.getElementById('comments');
+          const fragment = range.extractContents();
+          const commentsBlock = document.getElementById('comments');
 
-                // update pagination blocks
-                commentsBlock.replaceChild(fragment.firstChild, commentsBlock.firstElementChild);
-                commentsBlock.replaceChild(fragment.lastChild, commentsBlock.lastElementChild);
+          // update pagination blocks
+          commentsBlock.replaceChild(fragment.firstChild, commentsBlock.firstElementChild);
+          commentsBlock.replaceChild(fragment.lastChild, commentsBlock.lastElementChild);
 
-                // page marker
-                ele.innerHTML = '';
-                ele.className = 'block block__header';
-                ele.style.textAlign = 'center';
-                ele.innerText = 'Page ' + nextPage;
+          // page marker
+          ele.innerHTML = '';
+          ele.className = 'block block__header';
+          ele.style.textAlign = 'center';
+          ele.innerText = 'Page ' + nextPage;
 
-                // relative time
-                timeAgo($$('time', fragment));
+          // relative time
+          timeAgo($$('time', fragment));
 
-                fragment.insertBefore(ele, fragment.firstElementChild);
-                commentsBlock.insertBefore(fragment, commentsBlock.lastElementChild);
+          fragment.insertBefore(ele, fragment.firstElementChild);
+          commentsBlock.insertBefore(fragment, commentsBlock.lastElementChild);
 
-                // configure button to load the next batch of comments
-                btn.remove();
+          // configure button to load the next batch of comments
+          btn.remove();
 
-                const navbar = $('nav', commentsBlock);
-                const btnNextPage = [...navbar.childNodes].find(node => node.innerHTML === 'Next ›');
-                if (btnNextPage) {
-                    const btn = insertButton('Load more comments');
-                    btn.addEventListener('click', (e) => {
-                        loadComments(e, nextPage + 1);
-                    });
-                }
-
+          const navbar = $('nav', commentsBlock);
+          const btnNextPage = [...navbar.childNodes].find(node => node.innerHTML === 'Next ›');
+          if (btnNextPage) {
+            const btn = insertButton('Load more comments');
+            btn.addEventListener('click', () => {
+              loadComments(nextPage + 1);
             });
+          }
+
+        });
     }
 
     NodeCreationObserver.onCreation('article[id^="comment_"], article[id^="post_"]', function (sourceCommentBody) {
-        const isForumPost = sourceCommentBody.matches('[id^="post_"]');
-        const selector = isForumPost ? 'post_' : 'comment_';
+      const isForumPost = sourceCommentBody.matches('[id^="post_"]');
+      const selector = isForumPost ? 'post_' : 'comment_';
 
-        const links = $$(`.communication__body__text a[href*="#${selector}"]`, sourceCommentBody);
-        const sourceCommentID = sourceCommentBody.id.slice(selector.length);
-        const ele = $('.communication__body__sender-name > strong', sourceCommentBody);
-        const sourceAuthor = (ele.firstElementChild !== null && ele.firstElementChild.matches('a')) ? ele.firstElementChild.innerText : ele.innerHTML;
+      const links = $$(`.communication__body__text a[href*="#${selector}"]`, sourceCommentBody);
+      const sourceCommentID = sourceCommentBody.id.slice(selector.length);
+      const ele = $('.communication__body__sender-name > strong', sourceCommentBody);
+      const sourceAuthor = (ele.firstElementChild !== null && ele.firstElementChild.matches('a')) ? ele.firstElementChild.innerText : ele.innerHTML;
 
-        links.forEach((link) => {
-            const targetCommentID = link.hash.slice(selector.length + 1);    // Example: link.hash == "#comment_5430424" or link.hash == "#post_5430424"
+      links.forEach(link => {
+        const targetCommentID = link.hash.slice(selector.length + 1);   // Example: link.hash == "#comment_5430424" or link.hash == "#post_5430424"
 
-            // add backlink if the comment is not part of a quote
-            // and not fetched
-            if (!link.matches('blockquote a') && !sourceCommentBody.matches('.fetched-comment')) {
-                const backlink = document.createElement('a');
+        // add backlink if the comment is not part of a quote
+        // and not fetched
+        if (!link.matches('blockquote a') && !sourceCommentBody.matches('.fetched-comment')) {
+          const backlink = document.createElement('a');
 
-                backlink.style.marginRight = '5px';
-                backlink.href = '#' + selector + sourceCommentID;
-                backlink.textContent = '►';
-                backlink.innerHTML += sourceAuthor;
+          backlink.style.marginRight = '5px';
+          backlink.href = '#' + selector + sourceCommentID;
+          backlink.textContent = '►';
+          backlink.innerHTML += sourceAuthor;
 
-                backlink.addEventListener('mouseenter', () => {
-                    linkEnter(backlink, sourceCommentID, isForumPost);
-                });
-                backlink.addEventListener('mouseleave', () => {
-                    linkLeave(backlink, sourceCommentID, isForumPost);
-                });
-                backlink.addEventListener('click', () => {
-                    // force pageload instead of trying to navigate to a nonexistent anchor on the current page
-                    if (document.getElementById(selector + sourceCommentID) === null) window.location.reload();
-                });
+          backlink.addEventListener('mouseenter', () => {
+            linkEnter(backlink, sourceCommentID, isForumPost);
+          });
+          backlink.addEventListener('mouseleave', () => {
+            linkLeave(backlink, sourceCommentID, isForumPost);
+          });
+          backlink.addEventListener('click', () => {
+            // force pageload instead of trying to navigate to a nonexistent anchor on the current page
+            if (document.getElementById(selector + sourceCommentID) === null) window.location.reload();
+          });
 
-                insertBacklink(backlink, targetCommentID, isForumPost);
+          insertBacklink(backlink, targetCommentID, isForumPost);
+        }
+
+        if (DISABLE_NATIVE_PREVIEW && !isForumPost) {
+          link.addEventListener('click', e => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            // quoted links doesn't contain query strings, this prevents page reload on links like "derpibooru.org/1234?q=tag"
+            const a = document.createElement('a');
+            if (document.getElementById(selector + targetCommentID) === null) {
+              a.href = e.currentTarget.href;
+            } else {
+              a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
             }
 
-            if (DISABLE_NATIVE_PREVIEW && !isForumPost) {
-                link.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+            // Firefox requires the element to be inserted on the page for this to work
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
 
-                    // quoted links doesn't contain query strings, this prevents page reload on links like "derpibooru.org/1234?q=tag"
-                    const a = document.createElement('a');
-                    if (document.getElementById(selector + targetCommentID) === null) {
-                        a.href = e.currentTarget.href;
-                    } else {
-                        a.href = window.location.pathname + window.location.search + e.currentTarget.hash;
-                    }
-
-                    // Firefox requires the element to be inserted on the page for this to work
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-
-                    // for paginated comments, when comment for the same image is on another page
-                    if (window.location.pathname == e.currentTarget.pathname &&
-                        document.getElementById(selector + targetCommentID) === null) {
-                        window.location.reload();
-                    }
-                });
+            // for paginated comments, when comment for the same image is on another page
+            if (
+              window.location.pathname == e.currentTarget.pathname
+              && document.getElementById(selector + targetCommentID) === null
+            ) {
+              window.location.reload();
             }
+          });
+        }
 
-            link.addEventListener('mouseenter', () => {
-                linkEnter(link, targetCommentID, isForumPost);
-            });
-            link.addEventListener('mouseleave', () => {
-                linkLeave(link, targetCommentID, isForumPost);
-            });
-
+        link.addEventListener('mouseenter', () => {
+          linkEnter(link, targetCommentID, isForumPost);
+        });
+        link.addEventListener('mouseleave', () => {
+          linkLeave(link, targetCommentID, isForumPost);
         });
 
-        // If other pages had replied to this comment
-        if (backlinksCache[sourceCommentID] !== undefined) {
-            backlinksCache[sourceCommentID].forEach((backlink) => {
-                insertBacklink(backlink, sourceCommentID, isForumPost);
-            });
-        }
+      });
+
+      // If other pages had replied to this comment
+      if (backlinksCache[sourceCommentID] !== undefined) {
+        backlinksCache[sourceCommentID].forEach(backlink => {
+          insertBacklink(backlink, sourceCommentID, isForumPost);
+        });
+      }
 
     });
 
     // Load and append more comments
     NodeCreationObserver.onCreation('#comments nav.pagination', function (navbar) {
-        if (document.getElementById('comment_loading_button') !== null) return;
+      if (document.getElementById('comment_loading_button') !== null) return;
 
-        const childNodes = [...navbar.childNodes];
-        const btnNextPage = childNodes.find(node => node.innerHTML === 'Next ›');
-        if (!btnNextPage) return;
+      const childNodes = [...navbar.childNodes];
+      const btnNextPage = childNodes.find(node => node.innerHTML === 'Next ›');
+      if (!btnNextPage) return;
 
-        const nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
+      const nextPage = parseInt(getQueryVariable('page', btnNextPage), 10);
 
-        const btn = insertButton('Load more comments');
-        btn.addEventListener('click', (e) => {
-            loadComments(e, nextPage);
-        });
+      const btn = insertButton('Load more comments');
+      btn.addEventListener('click', () => {
+        loadComments(nextPage);
+      });
     });
 
     // Add clickable links to hotlinked images
     if (LINK_IMAGES) {
-        NodeCreationObserver.onCreation('.communication__body__text .imgspoiler>img, .image-description .imgspoiler>img', img => {
-            if (img.closest('a') !== null) return; // Image is already part of link so we do nothing.
+      NodeCreationObserver.onCreation('.communication__body__text .imgspoiler>img, .image-description .imgspoiler>img', img => {
+        if (img.closest('a') !== null) return; // Image is already part of link so we do nothing.
 
-            const imgParent = img.parentElement;
-            const anchor = document.createElement('a');
-            anchor.referrerPolicy = 'origin';
-            anchor.relList.add('noreferrer', 'noopener');
-            const imageId = getImageId(img.src);
-            if (imageId !== null) {
-                // image is on Derpibooru
-                anchor.href = `/${imageId}`;
-            } else {
-                // external image: ext.derpicdn.net link
-                const src = img.src;
-                const b64ReTempplate = '(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}(?:==)?|[A-Za-z0-9-_]{3}=?)?';
-                const extRegExp = new RegExp(`/${b64ReTempplate}/(${b64ReTempplate})$`);
+        const imgParent = img.parentElement;
+        const anchor = document.createElement('a');
+        anchor.referrerPolicy = 'origin';
+        anchor.relList.add('noreferrer', 'noopener');
+        const imageId = getImageId(img.src);
+        if (imageId !== null) {
+          // image is on Derpibooru
+          anchor.href = `/${imageId}`;
+        } else {
+          // external image: ext.derpicdn.net link
+          const src = img.src;
+          const b64ReTempplate = '(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}(?:==)?|[A-Za-z0-9-_]{3}=?)?';
+          const extRegExp = new RegExp(`/${b64ReTempplate}/(${b64ReTempplate})$`);
 
-                // https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
-                const b64DecodeUnicode = str => {
-                    // Going backwards: from bytestream, to percent-encoding, to original string.
-                    return decodeURIComponent(
-                        window.atob(str)
-                            .split('')
-                            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                            .join('')
-                    );
-                };
+          // https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
+          const b64DecodeUnicode = str => {
+            // Going backwards: from bytestream, to percent-encoding, to original string.
+            return decodeURIComponent(
+              window.atob(str)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+            );
+          };
 
-                const extResult = src.match(extRegExp);
-                if (extResult[1]) {
-                    // Note: ext uses RFC 4648 variant of Base64 to encode digest and
-                    // url, which replaces '/' and '+' with '_' and '-' respectively.
-                    const b64string = extResult[1]
-                        .replace(/_/g, '/')
-                        .replace(/-/g, '+');
-                    anchor.href = b64DecodeUnicode(b64string);
-                } else {
-                    throw new Error('Unable to linkify image with src: ' + src);
-                }
-            }
-            anchor.appendChild(img);
-            imgParent.appendChild(anchor);
-        });
+          const extResult = src.match(extRegExp);
+          if (extResult[1]) {
+            // Note: ext uses RFC 4648 variant of Base64 to encode digest and
+            // url, which replaces '/' and '+' with '_' and '-' respectively.
+            const b64string = extResult[1]
+              .replace(/_/g, '/')
+              .replace(/-/g, '+');
+            anchor.href = b64DecodeUnicode(b64string);
+          } else {
+            throw new Error('Unable to linkify image with src: ' + src);
+          }
+        }
+        anchor.appendChild(img);
+        imgParent.appendChild(anchor);
+      });
     }
 })();
