@@ -33,7 +33,7 @@
     config.registerSetting({
       title: 'Disable native preview',
       key: 'disable_native_preview',
-      description: 'This will disable the site\'s native feature that inserts the linked comment above the current one when clicked, and instead navigates to the targted comment.',
+      description: 'This will disable the site\'s native feature that inserts the linked comment above the current one when clicked, and instead navigates to the targeted comment.',
       type: 'checkbox',
       defaultValue: false
     });
